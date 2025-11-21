@@ -1,5 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import Link from 'next/link';
+import { __isDev, __hasWindow } from '@/config';
 
 interface Props {
   children: ReactNode;
@@ -27,7 +28,19 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+    // Log error details to console in development
     console.error('ErrorBoundary caught an error:', error, errorInfo);
+
+    // Send error to Sentry if available
+    if (__hasWindow && window.Sentry) {
+      window.Sentry.captureException(error, {
+        contexts: {
+          react: {
+            componentStack: errorInfo.componentStack,
+          },
+        },
+      });
+    }
   }
 
   resetError = (): void => {
@@ -50,7 +63,7 @@ class ErrorBoundary extends Component<Props, State> {
               </p>
             </div>
 
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {__isDev && this.state.error && (
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-left">
                 <p className="text-sm font-mono text-red-800 break-all">
                   {this.state.error.toString()}
