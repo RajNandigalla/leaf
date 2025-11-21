@@ -4,6 +4,11 @@ import { __isDev, __hasWindow } from '@/config';
 
 interface Props {
   children: ReactNode;
+  /**
+   * When true (default), errors are reported to analytics services such as Sentry.
+   * Set to false to disable analytics reporting (e.g., in environments where you don't want tracking).
+   */
+  logAnalytics?: boolean;
 }
 
 interface State {
@@ -31,8 +36,8 @@ class ErrorBoundary extends Component<Props, State> {
     // Log error details to console in development
     console.error('ErrorBoundary caught an error:', error, errorInfo);
 
-    // Send error to Sentry if available
-    if (__hasWindow && window.Sentry) {
+    // Send error to Sentry if analytics logging is enabled
+    if (this.props.logAnalytics !== false && __hasWindow && window.Sentry) {
       window.Sentry.captureException(error, {
         contexts: {
           react: {
