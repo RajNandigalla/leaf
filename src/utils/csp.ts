@@ -36,6 +36,9 @@ export function buildCSP(nonce?: string): string {
       // Sentry error tracking
       'https://*.ingest.sentry.io',
       'https://sentry.io',
+      // Development only external APIs
+      __isDev ? 'https://flyby-router-demo.herokuapp.com' : '',
+      __isDev ? 'https://jsonplaceholder.typicode.com' : '',
       // Add your API domains here
       // 'https://api.yourapp.com',
     ].filter(Boolean),

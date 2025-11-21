@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { generateNonce, getSecurityHeaders } from '@/utils/csp';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // Generate a nonce for this request
   const nonce = generateNonce();
 
