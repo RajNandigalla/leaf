@@ -1,4 +1,5 @@
 import packageJson from '../../package.json';
+import { env } from './env';
 
 export interface VersionInfo {
   version: string;
@@ -21,7 +22,7 @@ export function getVersionInfo(): VersionInfo {
 
   return {
     version: packageJson.version,
-    environment: process.env.NODE_ENV || 'development',
+    environment: env('NODE_ENV') || 'development',
     buildTime,
     buildTimestamp,
   };
