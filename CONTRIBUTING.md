@@ -78,6 +78,25 @@ Thank you for your interest in contributing to LeafInk! We welcome contributions
 2.  Open a **Pull Request** against the `main` branch of the original repository.
 3.  Provide a clear description of your changes and link to any relevant issues.
 
+## Releases
+
+Releases are automated using `standard-version`. To create a new release:
+
+1.  Ensure all changes are committed using conventional commit messages
+2.  Run the appropriate release command:
+    ```bash
+    npm run release        # Automatically determines version bump
+    npm run release:patch  # For bug fixes (0.0.x)
+    npm run release:minor  # For new features (0.x.0)
+    npm run release:major  # For breaking changes (x.0.0)
+    ```
+3.  Push the changes and tags:
+    ```bash
+    git push --follow-tags origin main
+    ```
+
+The `CHANGELOG.md` will be automatically updated based on your commit messages.
+
 ## License
 
 By contributing, you agree that your contributions will be licensed under the project's [MIT License](./LICENSE).
