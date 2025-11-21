@@ -80,6 +80,8 @@ npm run commit
 
 We use [standard-version](https://github.com/conventional-changelog/standard-version) to automatically generate changelogs based on conventional commits.
 
+> **Note**: Release commands should only be run by project maintainers or release managers with write access to the repository. Regular contributors should use `npm run commit` for their commits.
+
 #### How to Generate a Release
 
 1. **Make sure all changes are committed** using conventional commits:

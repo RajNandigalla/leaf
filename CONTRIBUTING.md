@@ -97,6 +97,23 @@ Releases are automated using `standard-version`. To create a new release:
 
 The `CHANGELOG.md` will be automatically updated based on your commit messages.
 
+### Who Should Create Releases?
+
+**Release creation is restricted to project maintainers and release managers.**
+
+- **Contributors**: Use `npm run commit` for your commits. Do not run release commands.
+- **Maintainers/Release Managers**: Run `npm run release` when ready to publish a new version.
+
+### When to Create a Release
+
+Create a release when:
+- A set of features/fixes have been completed and tested
+- You're ready to deploy to production
+- At regular intervals (e.g., weekly, bi-weekly, or after each sprint)
+- After merging significant PRs to the main branch
+
+**Important**: Only create releases from the `main` branch. You must have write permissions to push tags to the repository.
+
 ## License
 
 By contributing, you agree that your contributions will be licensed under the project's [MIT License](./LICENSE).
