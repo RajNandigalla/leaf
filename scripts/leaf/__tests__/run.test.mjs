@@ -119,4 +119,67 @@ describe('leaf run', () => {
 
     expect(mockChildProcess.execSync).not.toHaveBeenCalled();
   });
+
+  it('should validate platform selection in prompt', async () => {
+    runCommand(program);
+
+    let validationFn;
+    mockInquirer.prompt.mockImplementation((questions) => {
+      validationFn = questions[0].validate;
+      return Promise.resolve({ platforms: ['ios'] });
+    });
+
+    await commandAction();
+
+    // Test empty selection
+    expect(validationFn([])).toBe('You must choose at least one platform.');
+    // Test valid selection
+    expect(validationFn(['ios'])).toBe(true);
+  });
+
+  it('should handle sync errors and continue', async () => {
+    runCommand(program);
+
+    mockChildProcess.execSync.mockImplementation(() => {
+      throw new Error('Sync failed');
+    });
+
+    await commandAction('ios');
+
+    expect(mockChildProcess.execSync).toHaveBeenCalled();
+    expect(mockChildProcess.spawn).not.toHaveBeenCalled();
+  });
+
+  it('should handle non-zero exit codes', async () => {
+    runCommand(program);
+
+    const mockChild = {
+      on: jest.fn((event, callback) => {
+        if (event === 'close') {
+          setTimeout(() => callback(1), 0); // Non-zero exit code
+        }
+        return mockChild;
+      }),
+    };
+    mockChildProcess.spawn.mockReturnValue(mockChild);
+
+    await commandAction('ios');
+
+    expect(mockChildProcess.spawn).toHaveBeenCalled();
+  });
+
+  it('should handle general errors', async () => {
+    runCommand(program);
+
+    jest.spyOn(process, 'exit').mockImplementation(() => {});
+
+    // Mock spawn to throw an error
+    mockChildProcess.spawn.mockImplementation(() => {
+      throw new Error('General error');
+    });
+
+    await commandAction('ios');
+
+    expect(process.exit).toHaveBeenCalledWith(1);
+  });
 });

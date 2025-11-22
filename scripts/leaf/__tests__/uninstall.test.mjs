@@ -92,4 +92,56 @@ describe('leaf uninstall', () => {
     expect(mockInstaller.uninstallDependencies).toHaveBeenCalled();
     expect(mockInstaller.uninstallCommands).toHaveBeenCalled();
   });
+
+  it('should handle dependency uninstall errors', async () => {
+    uninstallCommand(program);
+
+    mockInquirer.prompt.mockResolvedValue({ confirm: true });
+    mockInstaller.uninstallDependencies.mockRejectedValue(new Error('Uninstall failed'));
+
+    await commandAction({});
+
+    expect(mockInstaller.uninstallDependencies).toHaveBeenCalled();
+    expect(mockOra.fail).toHaveBeenCalled();
+  });
+
+  it('should handle command uninstall errors', async () => {
+    uninstallCommand(program);
+
+    mockInquirer.prompt.mockResolvedValue({ confirm: true });
+    mockInstaller.uninstallCommands.mockRejectedValue(new Error('Command removal failed'));
+
+    await commandAction({});
+
+    expect(mockInstaller.uninstallCommands).toHaveBeenCalled();
+    expect(mockOra.fail).toHaveBeenCalled();
+  });
+
+  it('should uninstall only dependencies when commands not installed', async () => {
+    uninstallCommand(program);
+
+    mockChecker.checkInstallation.mockReturnValue({
+      depsInstalled: true,
+      commandsInstalled: false,
+    });
+
+    await commandAction({ yes: true });
+
+    expect(mockInstaller.uninstallDependencies).toHaveBeenCalled();
+    expect(mockInstaller.uninstallCommands).not.toHaveBeenCalled();
+  });
+
+  it('should uninstall only commands when dependencies not installed', async () => {
+    uninstallCommand(program);
+
+    mockChecker.checkInstallation.mockReturnValue({
+      depsInstalled: false,
+      commandsInstalled: true,
+    });
+
+    await commandAction({ yes: true });
+
+    expect(mockInstaller.uninstallDependencies).not.toHaveBeenCalled();
+    expect(mockInstaller.uninstallCommands).toHaveBeenCalled();
+  });
 });

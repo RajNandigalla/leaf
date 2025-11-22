@@ -89,4 +89,26 @@ describe('leaf init', () => {
       expect.stringContaining('"@capacitor/core": "^latest"')
     );
   });
+
+  it('should show success message after creation', async () => {
+    initCommand(program);
+
+    await commandAction();
+
+    expect(mockFs.writeFileSync).toHaveBeenCalled();
+    expect(mockExec.runCommand).toHaveBeenCalled();
+  });
+
+  it('should handle file write errors', async () => {
+    initCommand(program);
+
+    jest.spyOn(process, 'exit').mockImplementation(() => {});
+    mockFs.writeFileSync.mockImplementation(() => {
+      throw new Error('Permission denied');
+    });
+
+    await commandAction();
+
+    expect(process.exit).toHaveBeenCalledWith(1);
+  });
 });
