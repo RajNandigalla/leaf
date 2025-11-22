@@ -62,7 +62,7 @@ For development and testing, the application uses Mock Service Worker (MSW) with
 
 - **MSW**: Intercepts and mocks REST and GraphQL requests.
 - **Faker.js**: Generates realistic random data for mocked responses.
-- **Configuration**: Enabled via `NEXT_PUBLIC_API_MOCKING=enabled` environment variable.
+- **Configuration**: Enabled via `NEXT_PUBLIC_API_MOCKING=true` environment variable.
 - **Handlers**: Defined in `src/mocks/handlers.ts`.
 - **Test Page**: `/playground/mocks` demonstrates both REST and GraphQL mocking.
 

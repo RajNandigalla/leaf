@@ -21,7 +21,7 @@ The application uses a custom `env()` utility for type-safe access to environmen
 import { env } from '@/utils/env';
 
 const apiKey = env('NEXT_PUBLIC_FIREBASE_API_KEY');
-const isEnabled = env('NEXT_PUBLIC_ENABLE_FIREBASE') === 'true';
+const isEnabled = env('NEXT_PUBLIC_ENABLE_FIREBASE') === true;
 ```
 
 ### With Custom Fallback
@@ -55,7 +55,7 @@ NEXT_PUBLIC_SENTRY_DSN=
 ### Feature Flags
 
 ```bash
-NEXT_PUBLIC_API_MOCKING=enabled
+NEXT_PUBLIC_API_MOCKING=true
 ```
 
 ### General

@@ -19,7 +19,7 @@ The application uses MSW to intercept and mock both REST and GraphQL API request
 ### Environment Variable
 
 ```bash
-NEXT_PUBLIC_API_MOCKING=enabled
+NEXT_PUBLIC_API_MOCKING=true
 ```
 
 ## Usage
@@ -29,7 +29,7 @@ NEXT_PUBLIC_API_MOCKING=enabled
 Set the environment variable in `.env.local`:
 
 ```bash
-NEXT_PUBLIC_API_MOCKING=enabled
+NEXT_PUBLIC_API_MOCKING=true
 ```
 
 ### REST API Mocking

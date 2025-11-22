@@ -14,7 +14,7 @@ import { __hasWindow } from '@/config';
 import { RemoteConfigProvider } from '@/contexts/RemoteConfigContext';
 import { env } from '@/utils/env';
 
-if (env('NEXT_PUBLIC_API_MOCKING') === 'enabled') {
+if (env('NEXT_PUBLIC_API_MOCKING')) {
   import('@/mocks').then(({ initMocks }) => {
     initMocks();
   });

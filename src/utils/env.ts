@@ -7,7 +7,7 @@ type EnvVars = {
   NODE_ENV: 'development' | 'production' | 'test';
   NEXT_PUBLIC_BASE_URL?: string;
   // Firebase
-  NEXT_PUBLIC_ENABLE_FIREBASE?: string;
+  NEXT_PUBLIC_ENABLE_FIREBASE?: boolean;
   NEXT_PUBLIC_FIREBASE_API_KEY?: string;
   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN?: string;
   NEXT_PUBLIC_FIREBASE_PROJECT_ID?: string;
@@ -17,7 +17,7 @@ type EnvVars = {
   // Sentry
   NEXT_PUBLIC_SENTRY_DSN?: string;
   // Feature Flags
-  NEXT_PUBLIC_API_MOCKING?: string;
+  NEXT_PUBLIC_API_MOCKING?: boolean;
 };
 
 /**
