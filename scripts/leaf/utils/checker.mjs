@@ -26,9 +26,16 @@ export function checkInstallation() {
     android: fs.existsSync(path.join(process.cwd(), 'android')),
   };
 
+  // Check capacitor config
+  const configExists =
+    fs.existsSync(path.join(process.cwd(), 'capacitor.config.ts')) ||
+    fs.existsSync(path.join(process.cwd(), 'capacitor.config.json')) ||
+    fs.existsSync(path.join(process.cwd(), 'capacitor.config.js'));
+
   return {
     depsInstalled,
-    isFullyInstalled: depsInstalled,
+    configExists,
+    isFullyInstalled: depsInstalled && configExists,
     installedDeps: installedDeps.length,
     totalDeps: Object.keys(allDeps).length,
     platforms,

@@ -24,6 +24,13 @@ export default (program) => {
         console.log(chalk.gray(`   ${status.installedDeps}/${status.totalDeps} packages`));
       }
 
+      // Config status
+      const configIcon = status.configExists ? chalk.green(figures.tick) : chalk.red(figures.cross);
+      const configText = status.configExists
+        ? chalk.green('Found')
+        : chalk.red('Missing (capacitor.config.ts)');
+      console.log(`${configIcon} Configuration: ${configText}`);
+
       // Platforms status
       console.log(`\n${chalk.bold('Platforms:')}`);
       const iosIcon = status.platforms.ios ? chalk.green(figures.tick) : chalk.gray(figures.circle);
@@ -72,7 +79,13 @@ export default (program) => {
             chalk.gray('to install Capacitor')
           );
         }
-        if (!status.platforms.ios && !status.platforms.android) {
+        if (!status.configExists) {
+          console.log(
+            chalk.gray('  • Run'),
+            chalk.bold('leaf setup'),
+            chalk.gray('to initialize Capacitor')
+          );
+        } else if (!status.platforms.ios && !status.platforms.android) {
           console.log(
             chalk.gray('  • Run'),
             chalk.bold('leaf setup'),
