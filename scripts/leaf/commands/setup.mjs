@@ -5,6 +5,7 @@ import ora from 'ora';
 import chalk from 'chalk';
 import { runCommand } from '../utils/exec.mjs';
 import { checkInstallation } from '../utils/checker.mjs';
+import { shouldSkipBuild, getServerUrl } from '../utils/capacitor.mjs';
 
 export default (program) => {
   program
@@ -20,6 +21,16 @@ export default (program) => {
         console.log(chalk.red('❌ Capacitor dependencies not installed'));
         console.log(chalk.gray('\nRun:'), chalk.bold('leaf install\n'));
         return;
+      }
+
+      // Check for server URL
+      const skipBuild = shouldSkipBuild();
+      const serverUrl = getServerUrl();
+
+      if (skipBuild && serverUrl) {
+        console.log(chalk.cyan('🔄 Live reload detected'));
+        console.log(chalk.gray(`   Server URL: ${serverUrl}`));
+        console.log(chalk.gray('   Skipping web build (using live server)\n'));
       }
 
       // Interactive setup
@@ -62,7 +73,7 @@ export default (program) => {
           name: 'buildFirst',
           message: 'Build web app before adding platforms?',
           default: true,
-          when: () => !options.skipBuild,
+          when: () => !options.skipBuild && !skipBuild,
         },
       ]);
 

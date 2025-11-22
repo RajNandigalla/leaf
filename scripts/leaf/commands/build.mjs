@@ -5,6 +5,7 @@ import ora from 'ora';
 import chalk from 'chalk';
 import { runCommand } from '../utils/exec.mjs';
 import { checkInstallation } from '../utils/checker.mjs';
+import { shouldSkipBuild, getServerUrl } from '../utils/capacitor.mjs';
 
 export default (program) => {
   program
@@ -19,6 +20,16 @@ export default (program) => {
         console.log(chalk.red('❌ Capacitor is not fully installed.'));
         console.log(chalk.gray('Run'), chalk.bold('leaf install'), chalk.gray('first.\n'));
         return;
+      }
+
+      // Check for server URL
+      const skipBuild = shouldSkipBuild();
+      const serverUrl = getServerUrl();
+
+      if (skipBuild && serverUrl) {
+        console.log(chalk.cyan('🔄 Live reload detected'));
+        console.log(chalk.gray(`   Server URL: ${serverUrl}`));
+        console.log(chalk.gray('   Skipping web build (using live server)\n'));
       }
 
       let buildMode = 'all'; // default
@@ -45,8 +56,8 @@ export default (program) => {
       }
 
       try {
-        // Build web app (unless sync-only)
-        if (buildMode !== 'sync-only') {
+        // Build web app (unless sync-only or server URL configured)
+        if (buildMode !== 'sync-only' && !skipBuild) {
           const leafConfig = JSON.parse(
             fs.readFileSync(path.join(process.cwd(), 'leaf.json'), 'utf-8')
           );
@@ -61,6 +72,8 @@ export default (program) => {
             console.error(chalk.red(error.message));
             process.exit(1);
           }
+        } else if (skipBuild) {
+          console.log(chalk.gray('⏭️  Skipping web build (server URL configured)\n'));
         }
 
         // Sync with Capacitor

@@ -4,6 +4,7 @@ import inquirer from 'inquirer';
 import ora from 'ora';
 import chalk from 'chalk';
 import { runCommand } from '../utils/exec.mjs';
+import { shouldSkipBuild, getServerUrl } from '../utils/capacitor.mjs';
 
 export default (program) => {
   const release = program
@@ -23,6 +24,33 @@ export default (program) => {
         console.log(chalk.red('❌ Android platform not found'));
         console.log(chalk.gray('Run'), chalk.bold('leaf setup'), chalk.gray('first\n'));
         return;
+      }
+
+      // Check for server URL
+      const skipBuild = shouldSkipBuild();
+      const serverUrl = getServerUrl();
+
+      if (skipBuild && serverUrl) {
+        console.log(chalk.yellow('⚠️  Warning: Server URL detected in capacitor.config'));
+        console.log(chalk.gray(`   URL: ${serverUrl}`));
+        console.log(
+          chalk.gray('   The app will load content from this URL instead of bundled files.')
+        );
+        console.log(chalk.gray('   Make sure this is intentional for your release build.\n'));
+
+        const continueAnswer = await inquirer.prompt([
+          {
+            type: 'confirm',
+            name: 'continue',
+            message: 'Continue with release build?',
+            default: true,
+          },
+        ]);
+
+        if (!continueAnswer.continue) {
+          console.log(chalk.yellow('\n⚠️  Release cancelled\n'));
+          return;
+        }
       }
 
       const answers = await inquirer.prompt([
