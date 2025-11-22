@@ -92,6 +92,23 @@ Utility library for data manipulation. Import directly from `lodash`.
 
 **Usage**: `import _ from 'lodash'` or `import { debounce } from 'lodash'`
 
+### tailwind-merge
+
+Intelligently merges Tailwind CSS classes, resolving conflicts.
+
+- **cn() utility**: Combines `clsx` and `tailwind-merge` in `src/utils/cn.ts`
+- **Usage**: `cn('px-2 py-1', 'px-4')` → `'py-1 px-4'` (px-4 overrides px-2)
+- **Benefits**: Prevents conflicting Tailwind classes, conditional classes
+
+### nanoid
+
+Fast, secure, URL-friendly unique ID generator.
+
+- **Utilities**: `src/utils/id.ts` provides various ID generation functions
+- **Functions**: `generateId()`, `generateShortId()`, `generatePrefixedId()`, etc.
+- **Usage**: Smaller and faster than UUID
+- **Benefits**: Collision-resistant, cryptographically strong
+
 ### Immer
 
 Immutable state updates with mutable syntax.
