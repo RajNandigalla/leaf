@@ -41,13 +41,18 @@ module.exports = function (plop) {
     actions: [
       {
         type: 'add',
-        path: 'src/hooks/{{camelCase name}}.ts',
+        path: 'src/hooks/{{camelCase name}}/{{camelCase name}}.ts',
         templateFile: 'templates/hook/hook.hbs',
       },
       {
         type: 'add',
-        path: 'src/hooks/{{camelCase name}}.test.ts',
+        path: 'src/hooks/{{camelCase name}}/{{camelCase name}}.test.ts',
         templateFile: 'templates/hook/test.hbs',
+      },
+      {
+        type: 'add',
+        path: 'src/hooks/{{camelCase name}}/index.ts',
+        templateFile: 'templates/hook/index.hbs',
       },
     ],
   });
