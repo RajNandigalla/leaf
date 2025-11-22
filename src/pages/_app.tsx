@@ -8,7 +8,6 @@ import { queryClient } from '@/lib/react-query';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 import { RemoteConfigProvider } from '@/contexts/RemoteConfigContext';
-import { env } from '@/utils/env';
 import { useAppInitialization } from '@/hooks/useAppInitialization';
 
 if (process.env.NEXT_PUBLIC_API_MOCKING === 'true') {

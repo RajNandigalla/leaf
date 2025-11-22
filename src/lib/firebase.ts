@@ -1,5 +1,6 @@
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getRemoteConfig, RemoteConfig } from 'firebase/remote-config';
+import { getAuth, Auth } from 'firebase/auth';
 import { env } from '@/utils/env';
 
 const firebaseConfig = {
@@ -13,6 +14,7 @@ const firebaseConfig = {
 
 let app: FirebaseApp | null = null;
 let remoteConfig: RemoteConfig | null = null;
+let auth: Auth | null = null;
 
 const isFirebaseEnabled = env('NEXT_PUBLIC_ENABLE_FIREBASE') === 'true';
 
@@ -21,6 +23,7 @@ if (isFirebaseEnabled) {
     app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
     remoteConfig = getRemoteConfig(app);
     remoteConfig.settings.minimumFetchIntervalMillis = 3600000; // 1 hour default
+    auth = getAuth(app);
   } catch (error) {
     console.error('Firebase initialization error:', error);
   }
@@ -28,4 +31,4 @@ if (isFirebaseEnabled) {
   console.log('Firebase is disabled via NEXT_PUBLIC_ENABLE_FIREBASE');
 }
 
-export { app, remoteConfig };
+export { app, remoteConfig, auth };
