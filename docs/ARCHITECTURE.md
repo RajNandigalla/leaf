@@ -44,6 +44,11 @@ For detailed API documentation, see [API Integration](./API.md).
   - **User Store**: Manages authentication, user data, and preferences with localStorage persistence.
   - **UI Store**: Manages theme, sidebar, modals, and notifications.
   - **Middleware**: Configured with persist (localStorage) and devtools (Redux DevTools) middleware.
+- **TanStack Query (React Query)**: Powerful server state management for data fetching, caching, and synchronization.
+  - **Configuration**: `src/lib/react-query.ts` with QueryClient setup
+  - **Provider**: Integrated in `_app.tsx` with React Query DevTools
+  - **Features**: Automatic caching, background refetching, optimistic updates
+  - **Example**: See `/playground/react-query` for queries and mutations demo
 - **Apollo Client**: Used for GraphQL data fetching. Configured in `src/lib/apollo.ts`.
 - **Axios**: Used for REST API requests. Configured in `src/lib/axios.ts`.
 - **Firebase Remote Config**: Used for dynamic feature flagging and configuration. See [Firebase Integration](./FIREBASE_INTEGRATION.md).

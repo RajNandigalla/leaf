@@ -1,7 +1,10 @@
 import '@/styles/index.scss';
 import type { AppProps } from 'next/app';
 import { ApolloProvider } from '@apollo/client/react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import client from '@/lib/apollo';
+import { queryClient } from '@/lib/react-query';
 import { useEffect } from 'react';
 import { logVersion } from '@/utils/version';
 import ErrorBoundary from '@/components/ErrorBoundary';
@@ -49,11 +52,14 @@ function App({ Component, pageProps }: AppProps) {
 
   return (
     <ErrorBoundary>
-      <ApolloProvider client={client}>
-        <RemoteConfigProvider>
-          <Component {...pageProps} />
-        </RemoteConfigProvider>
-      </ApolloProvider>
+      <QueryClientProvider client={queryClient}>
+        <ApolloProvider client={client}>
+          <RemoteConfigProvider>
+            <Component {...pageProps} />
+          </RemoteConfigProvider>
+        </ApolloProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
     </ErrorBoundary>
   );
 }
