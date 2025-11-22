@@ -11,7 +11,7 @@ import { RemoteConfigProvider } from '@/contexts/RemoteConfigContext';
 import { env } from '@/utils/env';
 import { useAppInitialization } from '@/hooks/useAppInitialization';
 
-if (env('NEXT_PUBLIC_API_MOCKING')) {
+if (env('NEXT_PUBLIC_API_MOCKING') === 'true') {
   import('@/mocks').then(({ initMocks }) => {
     initMocks();
   });

@@ -38,7 +38,7 @@ To set up your local environment:
 import { env } from '@/utils/env';
 
 const apiKey = env('NEXT_PUBLIC_FIREBASE_API_KEY');
-const isEnabled = env('NEXT_PUBLIC_ENABLE_FIREBASE') === true;
+const isEnabled = env('NEXT_PUBLIC_ENABLE_FIREBASE') === 'true';
 ```
 
 ### With Custom Fallback
@@ -54,7 +54,7 @@ const baseUrl = getEnv('NEXT_PUBLIC_BASE_URL', 'https://example.com');
 ### Firebase
 
 ```bash
-NEXT_PUBLIC_ENABLE_FIREBASE=false
+NEXT_PUBLIC_ENABLE_FIREBASE='false'
 NEXT_PUBLIC_FIREBASE_API_KEY=
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=
@@ -72,7 +72,7 @@ NEXT_PUBLIC_SENTRY_DSN=
 ### Feature Flags
 
 ```bash
-NEXT_PUBLIC_API_MOCKING=true
+NEXT_PUBLIC_API_MOCKING='true'
 ```
 
 ### General

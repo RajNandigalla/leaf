@@ -1,7 +1,13 @@
 import type { NextConfig } from 'next';
 import { withSentryConfig } from '@sentry/nextjs';
+import withBundleAnalyzer from '@next/bundle-analyzer';
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { i18n } = require('./next-i18next.config');
+
+const bundleAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
 
 const nextConfig: NextConfig = {
   i18n,
@@ -71,4 +77,4 @@ const sentryOptions = {
   silent: true,
 };
 
-export default withSentryConfig(nextConfig, sentryOptions);
+export default withSentryConfig(bundleAnalyzer(nextConfig), sentryOptions);

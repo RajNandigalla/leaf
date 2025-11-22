@@ -14,7 +14,7 @@ const firebaseConfig = {
 let app: FirebaseApp | null = null;
 let remoteConfig: RemoteConfig | null = null;
 
-const isFirebaseEnabled = env('NEXT_PUBLIC_ENABLE_FIREBASE');
+const isFirebaseEnabled = env('NEXT_PUBLIC_ENABLE_FIREBASE') === 'true';
 
 if (isFirebaseEnabled) {
   try {
