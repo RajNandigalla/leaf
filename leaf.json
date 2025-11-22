@@ -5,6 +5,7 @@
     "scripts": {
         "build": "npm run build"
     },
+    "webDir": "out",
     "dependencies": {
         "@capacitor/core": "^7.4.4",
         "@capacitor/cli": "^7.4.4",
@@ -13,5 +14,6 @@
     "devDependencies": {
         "@capacitor/android": "^7.4.4",
         "@capacitor/ios": "^7.4.4"
-    }
+    },
+    "plugins": {}
 }

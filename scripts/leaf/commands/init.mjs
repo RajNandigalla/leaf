@@ -57,6 +57,7 @@ export default (program) => {
           scripts: {
             build: 'npm run build',
           },
+          webDir: 'dist',
           dependencies: {
             '@capacitor/core': coreVersion,
             '@capacitor/cli': cliVersion,
@@ -66,6 +67,7 @@ export default (program) => {
             '@capacitor/android': androidVersion,
             '@capacitor/ios': iosVersion,
           },
+          plugins: {},
         };
 
         fs.writeFileSync(configPath, JSON.stringify(leafConfig, null, 4));

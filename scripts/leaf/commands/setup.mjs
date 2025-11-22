@@ -86,18 +86,34 @@ export default (program) => {
           }
         }
 
-        // Initialize Capacitor
-        const initSpinner = ora('Initializing Capacitor...').start();
-        try {
-          await runCommand(`npx cap init "${answers.appName}" "${answers.appId}" --web-dir=out`);
-          initSpinner.succeed(chalk.green('Capacitor initialized'));
-        } catch (error) {
-          initSpinner.fail(chalk.red('Initialization failed'));
-          throw error;
+        // Initialize Capacitor (skip if already initialized)
+        const configExists =
+          fs.existsSync(path.join(process.cwd(), 'capacitor.config.ts')) ||
+          fs.existsSync(path.join(process.cwd(), 'capacitor.config.json')) ||
+          fs.existsSync(path.join(process.cwd(), 'capacitor.config.js'));
+
+        if (!configExists) {
+          const initSpinner = ora('Initializing Capacitor...').start();
+          try {
+            await runCommand(`npx cap init "${answers.appName}" "${answers.appId}" --web-dir=out`);
+            initSpinner.succeed(chalk.green('Capacitor initialized'));
+          } catch (error) {
+            initSpinner.fail(chalk.red('Initialization failed'));
+            throw error;
+          }
+        } else {
+          console.log(chalk.gray('ℹ️  Capacitor already initialized (skipping)'));
         }
 
         // Add platforms
         for (const platform of answers.platforms) {
+          const platformPath = path.join(process.cwd(), platform);
+
+          if (fs.existsSync(platformPath)) {
+            console.log(chalk.gray(`ℹ️  ${platform} already exists (skipping)`));
+            continue;
+          }
+
           const platformSpinner = ora(`Adding ${platform}...`).start();
           try {
             await runCommand(`npx cap add ${platform}`);

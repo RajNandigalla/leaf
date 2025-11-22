@@ -27,6 +27,9 @@ import buildCommand from './commands/build.mjs';
 import runCommand from './commands/run.mjs';
 import doctorCommand from './commands/doctor.mjs';
 import initCommand from './commands/init.mjs';
+import pluginCommand from './commands/plugin.mjs';
+import cleanCommand from './commands/clean.mjs';
+import infoCommand from './commands/info.mjs';
 
 installCommand(program);
 statusCommand(program);
@@ -36,6 +39,9 @@ buildCommand(program);
 runCommand(program);
 doctorCommand(program);
 initCommand(program);
+pluginCommand(program);
+cleanCommand(program);
+infoCommand(program);
 
 // Show help if no command provided
 if (!process.argv.slice(2).length) {
