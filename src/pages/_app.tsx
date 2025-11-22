@@ -9,8 +9,17 @@ import { handleRuntimeError, handleUnhandledRejection } from '@/utils/errorHandl
 import { __hasWindow } from '@/config';
 
 import { RemoteConfigProvider } from '@/contexts/RemoteConfigContext';
+import { env } from '@/utils/env';
 
-export default function App({ Component, pageProps }: AppProps) {
+if (env('NEXT_PUBLIC_API_MOCKING') === 'enabled') {
+  import('@/mocks').then(({ initMocks }) => {
+    initMocks();
+  });
+}
+
+import { appWithTranslation } from 'next-i18next';
+
+function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
     logVersion();
 
@@ -48,3 +57,5 @@ export default function App({ Component, pageProps }: AppProps) {
     </ErrorBoundary>
   );
 }
+
+export default appWithTranslation(App);

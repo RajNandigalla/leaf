@@ -1,0 +1,5 @@
+{
+    "welcome": "Bienvenido a LeafInk",
+    "description": "Una aplicación Next.js con Firebase, Sentry y más.",
+    "change_language": "Cambiar idioma"
+}
