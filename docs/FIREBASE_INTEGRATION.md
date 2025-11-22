@@ -68,7 +68,7 @@ export default function WelcomeBanner() {
 
 ## Testing
 
-A test page is available at `/test-remote-config` (source: `src/pages/test-remote-config.tsx`) to verify the integration. It displays the value of the `welcome_message` key.
+A test page is available at `/playground/remote-config` (source: `src/pages/playground/remote-config.tsx`) to verify the integration. It displays the value of the `welcome_message` key.
 
 ## Best Practices
 
