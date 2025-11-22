@@ -1,7 +1,9 @@
+import fs from 'fs';
+import path from 'path';
 import inquirer from 'inquirer';
 import ora from 'ora';
 import chalk from 'chalk';
-import { execSync } from 'child_process';
+import { runCommand } from '../utils/exec.mjs';
 import { checkInstallation } from '../utils/checker.mjs';
 
 export default (program) => {
@@ -69,9 +71,14 @@ export default (program) => {
       try {
         // Build web app
         if (answers.buildFirst) {
-          const buildSpinner = ora('Building web app...').start();
+          const leafConfig = JSON.parse(
+            fs.readFileSync(path.join(process.cwd(), 'leaf.json'), 'utf-8')
+          );
+          const buildCommand = leafConfig.scripts?.build || 'npm run build';
+
+          const buildSpinner = ora(`Building web app (${buildCommand})...`).start();
           try {
-            execSync('npm run build:mobile', { stdio: 'pipe' });
+            await runCommand(buildCommand);
             buildSpinner.succeed(chalk.green('Web app built'));
           } catch (error) {
             buildSpinner.fail(chalk.red('Build failed'));
@@ -82,9 +89,7 @@ export default (program) => {
         // Initialize Capacitor
         const initSpinner = ora('Initializing Capacitor...').start();
         try {
-          execSync(`npx cap init "${answers.appName}" "${answers.appId}" --web-dir=out`, {
-            stdio: 'pipe',
-          });
+          await runCommand(`npx cap init "${answers.appName}" "${answers.appId}" --web-dir=out`);
           initSpinner.succeed(chalk.green('Capacitor initialized'));
         } catch (error) {
           initSpinner.fail(chalk.red('Initialization failed'));
@@ -95,7 +100,7 @@ export default (program) => {
         for (const platform of answers.platforms) {
           const platformSpinner = ora(`Adding ${platform}...`).start();
           try {
-            execSync(`npx cap add ${platform}`, { stdio: 'pipe' });
+            await runCommand(`npx cap add ${platform}`);
             platformSpinner.succeed(chalk.green(`${platform} added`));
           } catch (error) {
             platformSpinner.fail(chalk.red(`Failed to add ${platform}`));

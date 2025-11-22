@@ -26,6 +26,7 @@ import uninstallCommand from './commands/uninstall.mjs';
 import buildCommand from './commands/build.mjs';
 import runCommand from './commands/run.mjs';
 import doctorCommand from './commands/doctor.mjs';
+import initCommand from './commands/init.mjs';
 
 installCommand(program);
 statusCommand(program);
@@ -34,6 +35,7 @@ uninstallCommand(program);
 buildCommand(program);
 runCommand(program);
 doctorCommand(program);
+initCommand(program);
 
 // Show help if no command provided
 if (!process.argv.slice(2).length) {

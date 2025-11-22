@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
+import { runCommand } from './exec.mjs';
 import chalk from 'chalk';
 
 const LEAF_CONFIG_FILE = 'leaf.json';
@@ -49,15 +49,13 @@ export async function installDependencies() {
   );
 
   if (deps.length > 0) {
-    execSync(`npm install ${deps.join(' ')}`, { stdio: 'inherit' });
+    await runCommand(`npm install ${deps.join(' ')}`);
   }
 
   if (devDeps.length > 0) {
-    execSync(`npm install -D ${devDeps.join(' ')}`, { stdio: 'inherit' });
+    await runCommand(`npm install -D ${devDeps.join(' ')}`);
   }
 }
-
-
 
 export async function uninstallDependencies() {
   // Read leaf deps manifest
@@ -88,7 +86,7 @@ export async function uninstallDependencies() {
     return;
   }
 
-  execSync(`npm uninstall ${depsToRemove.join(' ')}`, { stdio: 'inherit' });
+  await runCommand(`npm uninstall ${depsToRemove.join(' ')}`);
 }
 
 export async function uninstallCommands() {

@@ -24,19 +24,6 @@ export default (program) => {
         console.log(chalk.gray(`   ${status.installedDeps}/${status.totalDeps} packages`));
       }
 
-      // Commands status
-      const cmdsIcon = status.commandsInstalled
-        ? chalk.green(figures.tick)
-        : chalk.red(figures.cross);
-      const cmdsText = status.commandsInstalled
-        ? chalk.green('Installed')
-        : chalk.red('Not installed');
-      console.log(`${cmdsIcon} Commands: ${cmdsText}`);
-
-      if (status.commandsInstalled) {
-        console.log(chalk.gray(`   ${status.installedCommands}/${status.totalCommands} scripts`));
-      }
-
       // Platforms status
       console.log(`\n${chalk.bold('Platforms:')}`);
       const iosIcon = status.platforms.ios ? chalk.green(figures.tick) : chalk.gray(figures.circle);
@@ -58,7 +45,7 @@ export default (program) => {
       if (status.isFullyInstalled) {
         statusMessage = chalk.green.bold('✨ Capacitor is fully installed and ready!');
         boxColor = 'green';
-      } else if (status.depsInstalled || status.commandsInstalled) {
+      } else if (status.depsInstalled) {
         statusMessage = chalk.yellow.bold('⚠️  Capacitor is partially installed');
         boxColor = 'yellow';
       } else {

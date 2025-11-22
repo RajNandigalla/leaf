@@ -1,7 +1,9 @@
+import fs from 'fs';
+import path from 'path';
 import inquirer from 'inquirer';
 import ora from 'ora';
 import chalk from 'chalk';
-import { execSync } from 'child_process';
+import { runCommand } from '../utils/exec.mjs';
 import { checkInstallation } from '../utils/checker.mjs';
 
 export default (program) => {
@@ -45,11 +47,14 @@ export default (program) => {
       try {
         // Build web app (unless sync-only)
         if (buildMode !== 'sync-only') {
-          const buildSpinner = ora('Building web app...').start();
+          const leafConfig = JSON.parse(
+            fs.readFileSync(path.join(process.cwd(), 'leaf.json'), 'utf-8')
+          );
+          const buildCommand = leafConfig.scripts?.build || 'npm run build';
+
+          const buildSpinner = ora(`Building web app (${buildCommand})...`).start();
           try {
-            // We use npx next build.
-            // Note: User needs output: 'export' in next.config.ts for Capacitor to work.
-            execSync('npx next build', { stdio: 'inherit' });
+            await runCommand(buildCommand);
             buildSpinner.succeed(chalk.green('Web app built successfully'));
           } catch (error) {
             buildSpinner.fail(chalk.red('Build failed'));
@@ -66,7 +71,7 @@ export default (program) => {
             if (buildMode === 'ios') syncCmd = 'npx cap sync ios';
             if (buildMode === 'android') syncCmd = 'npx cap sync android';
 
-            execSync(syncCmd, { stdio: 'inherit' });
+            await runCommand(syncCmd);
             syncSpinner.succeed(chalk.green('Synced with Capacitor'));
           } catch (error) {
             syncSpinner.fail(chalk.red('Sync failed'));
