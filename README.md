@@ -1,35 +1,39 @@
 # LeafInk
 
+[![CI](https://github.com/YOUR_USERNAME/leaf-ink/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/leaf-ink/actions/workflows/ci.yml)
+[![E2E Tests](https://github.com/YOUR_USERNAME/leaf-ink/actions/workflows/e2e.yml/badge.svg)](https://github.com/YOUR_USERNAME/leaf-ink/actions/workflows/e2e.yml)
+
 LeafInk is a modern web application built with Next.js, designed to provide a seamless and interactive user experience.
 
 ## Tech Stack
 
--   **Framework**: [Next.js](https://nextjs.org/)
--   **Styling**: [Tailwind CSS](https://tailwindcss.com/) & [Sass](https://sass-lang.com/)
--   **Data Fetching**:
-    -   [Apollo Client](https://www.apollographql.com/docs/react/) (GraphQL)
-    -   [Axios](https://axios-http.com/) (REST API)
--   **Animation**: [Framer Motion](https://www.framer.com/motion/) & [React Transition Group](https://reactcommunity.org/react-transition-group/)
--   **Utilities**: `dayjs`, `clsx`
--   **Testing**:
-    -   [Jest](https://jestjs.io/) (Unit Testing)
-    -   [Playwright](https://playwright.dev/) (End-to-End Testing)
--   **Code Quality**:
-    -   [ESLint](https://eslint.org/)
-    -   [Prettier](https://prettier.io/)
-    -   [Husky](https://typicode.github.io/husky/) & [lint-staged](https://github.com/okonet/lint-staged)
-    -   [Commitizen](https://github.com/commitizen/cz-cli)
+- **Framework**: [Next.js](https://nextjs.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) & [Sass](https://sass-lang.com/)
+- **Data Fetching**:
+  - [Apollo Client](https://www.apollographql.com/docs/react/) (GraphQL)
+  - [Axios](https://axios-http.com/) (REST API)
+- **Animation**: [Framer Motion](https://www.framer.com/motion/) & [React Transition Group](https://reactcommunity.org/react-transition-group/)
+- **Utilities**: `dayjs`, `clsx`
+- **Testing**:
+  - [Jest](https://jestjs.io/) (Unit Testing)
+  - [Playwright](https://playwright.dev/) (End-to-End Testing)
+- **Code Quality**:
+  - [ESLint](https://eslint.org/)
+  - [Prettier](https://prettier.io/)
+  - [Husky](https://typicode.github.io/husky/) & [lint-staged](https://github.com/okonet/lint-staged)
+  - [Commitizen](https://github.com/commitizen/cz-cli)
 
 ## Getting Started
 
 ### Prerequisites
 
--   Node.js (see `.nvmrc` for version)
--   npm or yarn
+- Node.js (see `.nvmrc` for version)
+- npm or yarn
 
 ### Installation
 
 1.  Clone the repository:
+
     ```bash
     git clone https://github.com/your-username/leaf-ink.git
     cd leaf-ink
@@ -85,11 +89,13 @@ We use [standard-version](https://github.com/conventional-changelog/standard-ver
 #### How to Generate a Release
 
 1. **Make sure all changes are committed** using conventional commits:
+
    ```bash
    npm run commit
    ```
 
 2. **Run the release command**:
+
    ```bash
    npm run release        # Automatically determines version bump based on commits
    npm run release:patch  # For bug fixes (0.0.x)
@@ -105,6 +111,7 @@ We use [standard-version](https://github.com/conventional-changelog/standard-ver
 #### What Happens During Release
 
 When you run `npm run release`, the following happens automatically:
+
 - Analyzes your commits since the last release
 - Determines the appropriate version bump (based on commit types: `feat`, `fix`, etc.)
 - Updates the version in `package.json`
@@ -127,6 +134,7 @@ git push --follow-tags origin main
 ```
 
 The `CHANGELOG.md` file will be automatically updated with entries like:
+
 - **Features**: New functionality added
 - **Bug Fixes**: Issues resolved
 - **Documentation**: Documentation updates
