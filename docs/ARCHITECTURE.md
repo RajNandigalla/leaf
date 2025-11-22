@@ -40,12 +40,16 @@ We enforce a strict Content Security Policy to mitigate XSS and other attacks. S
 
 For detailed API documentation, see [API Integration](./API.md).
 
+- **Zustand**: Lightweight state management for global application state. See [Zustand Documentation](./ZUSTAND.md).
+  - **User Store**: Manages authentication, user data, and preferences with localStorage persistence.
+  - **UI Store**: Manages theme, sidebar, modals, and notifications.
+  - **Middleware**: Configured with persist (localStorage) and devtools (Redux DevTools) middleware.
 - **Apollo Client**: Used for GraphQL data fetching. Configured in `src/lib/apollo.ts`.
 - **Axios**: Used for REST API requests. Configured in `src/lib/axios.ts`.
 - **Firebase Remote Config**: Used for dynamic feature flagging and configuration. See [Firebase Integration](./FIREBASE_INTEGRATION.md).
   - **Context**: `RemoteConfigContext` fetches config on app load.
   - **Hook**: `useRemoteConfig` provides easy access to values.
-- **React Context**: Used for global application state where appropriate (e.g., Remote Config status).
+- **React Context**: Used for specific use cases like Remote Config and dependency injection.
 
 ## API Mocking
 

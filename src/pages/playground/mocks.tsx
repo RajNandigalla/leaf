@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
+import { gql } from '@apollo/client';
 import api from '@/lib/axios';
 
 const GET_USERS = gql`
@@ -35,9 +36,9 @@ export default function MocksTest() {
           <h2 className="text-xl font-semibold mb-2">GraphQL (Faker)</h2>
           {gqlLoading && <p>Loading GraphQL...</p>}
           {gqlError && <p className="text-red-500">Error: {gqlError.message}</p>}
-          {gqlData && (
+          {gqlData ? (
             <pre className="bg-gray-100 p-4 rounded">{JSON.stringify(gqlData, null, 2)}</pre>
-          )}
+          ) : null}
         </div>
       </div>
     </div>
