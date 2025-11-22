@@ -4,6 +4,7 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   GithubAuthProvider,
+  OAuthProvider,
   User as FirebaseUser,
   getRedirectResult,
 } from 'firebase/auth';
@@ -15,6 +16,7 @@ export interface AuthContextType {
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
   signInWithGitHub: () => Promise<void>;
+  signInWithApple: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -70,6 +72,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await signInWithRedirect(auth, provider);
   };
 
+  const signInWithApple = async () => {
+    if (!auth) throw new Error('Firebase Auth is not initialized');
+    const provider = new OAuthProvider('apple.com');
+    await signInWithRedirect(auth, provider);
+  };
+
   const signOut = async () => {
     if (!auth) throw new Error('Firebase Auth is not initialized');
     await firebaseSignOut(auth);
@@ -82,6 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         signInWithGoogle,
         signInWithGitHub,
+        signInWithApple,
         signOut,
       }}
     >

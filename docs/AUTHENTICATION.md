@@ -43,6 +43,35 @@ Go to [Firebase Console](https://console.firebase.google.com/) → Your Project 
    - Paste **Client ID** and **Client Secret** from GitHub
    - Click **Save**
 
+#### Enable Apple Provider
+
+1. **Create Apple Services ID:**
+   - Go to [Apple Developer](https://developer.apple.com/account/resources/identifiers/list/serviceId) → **Certificates, Identifiers & Profiles**
+   - Click **+** → Select **Services IDs** → Continue
+   - **Description**: Your app name (e.g., "LeafInk")
+   - **Identifier**: Reverse domain (e.g., `com.leafink.signin`)
+   - Check **Sign In with Apple** → Configure
+   - **Primary App ID**: Select your app's bundle ID
+   - **Domains and Subdomains**: Add your domain (e.g., `leafink.com`)
+   - **Return URLs**: Copy from Firebase Console (shown in Apple provider settings)
+   - Save
+
+2. **Create Apple Key:**
+   - Go to **Keys** → Click **+**
+   - **Key Name**: "Sign in with Apple Key"
+   - Check **Sign In with Apple** → Configure
+   - Select your **Primary App ID**
+   - Save and download the `.p8` key file (save it securely!)
+   - Note the **Key ID**
+
+3. **Add to Firebase:**
+   - Click **Apple** in Firebase providers list
+   - Toggle **Enable**
+   - Paste **Services ID** (e.g., `com.leafink.signin`)
+   - Upload the `.p8` key file
+   - Enter **Key ID** and **Team ID** (from Apple Developer account)
+   - Click **Save**
+
 ### 3. Wrap Your App with AuthProvider
 
 Update `src/pages/_app.tsx`:
@@ -74,7 +103,7 @@ Use the `useAuth` hook in any component:
 import { useAuth } from '@/contexts/AuthContext';
 
 function MyComponent() {
-  const { user, loading, signInWithGoogle, signInWithGitHub, signOut } = useAuth();
+  const { user, loading, signInWithGoogle, signInWithGitHub, signInWithApple, signOut } = useAuth();
 
   if (loading) {
     return <div>Loading...</div>;
@@ -85,6 +114,7 @@ function MyComponent() {
       <div>
         <button onClick={signInWithGoogle}>Sign in with Google</button>
         <button onClick={signInWithGitHub}>Sign in with GitHub</button>
+        <button onClick={signInWithApple}>Sign in with Apple</button>
       </div>
     );
   }
@@ -109,7 +139,7 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 export default function Login() {
-  const { user, loading, signInWithGoogle, signInWithGitHub } = useAuth();
+  const { user, loading, signInWithGoogle, signInWithGitHub, signInWithApple } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -155,6 +185,16 @@ export default function Login() {
               {/* GitHub icon SVG */}
             </svg>
             Continue with GitHub
+          </button>
+
+          <button
+            onClick={signInWithApple}
+            className="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded-md shadow-sm bg-black text-white hover:bg-gray-900 transition"
+          >
+            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+              {/* Apple icon SVG */}
+            </svg>
+            Continue with Apple
           </button>
         </div>
       </div>
