@@ -128,5 +128,27 @@ NEXT_PUBLIC_BASE_URL=http://localhost:3000
 1. **Use `NEXT_PUBLIC_` prefix** - For client-side variables
 2. **Never commit `.env.local`** - Keep secrets out of version control
 3. **Update `.env.example`** - Document all required variables
-4. **Use type-safe utility** - Always use `env()` instead of `process.env`
+4. **Use type-safe utility** - Always use `env()` instead of `process.env` (except for tree-shaking, see below)
 5. **Provide defaults** - Add sensible defaults for development
+
+### Tree-Shaking Exception
+
+> [!IMPORTANT]
+> When using environment variables to conditionally import large libraries (like `msw` or `faker`) for development only, you **MUST** use `process.env.VARIABLE_NAME` directly instead of the `env()` utility.
+
+**Why?**
+Bundlers like Webpack perform static analysis to remove dead code (tree-shaking). They can identify `if (process.env.VAR === 'false')` and remove the code block, but they treat `env('VAR')` as a runtime function call and cannot safely remove the code, leading to development libraries leaking into production bundles.
+
+**Example:**
+
+```typescript
+// ✅ CORRECT - Enables tree-shaking
+if (process.env.NEXT_PUBLIC_API_MOCKING === 'true') {
+  import('@/mocks').then(({ initMocks }) => initMocks());
+}
+
+// ❌ INCORRECT - Prevents tree-shaking
+if (env('NEXT_PUBLIC_API_MOCKING') === 'true') {
+  import('@/mocks').then(({ initMocks }) => initMocks());
+}
+```
