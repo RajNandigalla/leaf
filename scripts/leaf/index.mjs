@@ -30,6 +30,7 @@ import initCommand from './commands/init.mjs';
 import pluginCommand from './commands/plugin.mjs';
 import cleanCommand from './commands/clean.mjs';
 import infoCommand from './commands/info.mjs';
+import certCommand from './commands/cert.mjs';
 
 installCommand(program);
 statusCommand(program);
@@ -42,6 +43,7 @@ initCommand(program);
 pluginCommand(program);
 cleanCommand(program);
 infoCommand(program);
+certCommand(program);
 
 // Show help if no command provided
 if (!process.argv.slice(2).length) {
