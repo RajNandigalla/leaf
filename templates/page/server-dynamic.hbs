@@ -1,0 +1,40 @@
+import type { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+
+export const getServerSideProps = (async (context) => {
+  const { {{paramName}} } = context.params as { {{paramName}}: string };
+  
+  // Fetch data from external API or database using the {{paramName}}
+  return {
+    props: {
+      {{paramName}},
+      // Add your other props here
+    },
+  };
+}) satisfies GetServerSideProps<{
+  {{paramName}}: string;
+  // Define your other props type here
+}>;
+
+export default function {{pascalCase name}}(
+  props: InferGetServerSidePropsType<typeof getServerSideProps>
+) {
+  const router = useRouter();
+  const { {{paramName}} } = props;
+
+  return (
+    <>
+      <Head>
+        <title>{{pascalCase name}} | LeafInk</title>
+        <meta name="description" content="{{pascalCase name}} page" />
+      </Head>
+
+      <div className="min-h-screen p-8">
+        <h1 className="text-4xl font-bold mb-8">{{pascalCase name}}</h1>
+        <p>{{pascalCase paramName}}: { {{paramName}} }</p>
+        {/* Add your page content here */}
+      </div>
+    </>
+  );
+}

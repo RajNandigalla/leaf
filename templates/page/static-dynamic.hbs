@@ -1,0 +1,57 @@
+import type { GetStaticProps, GetStaticPaths, InferGetStaticPropsType } from 'next';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+
+export const getStaticPaths = (async () => {
+  // Generate the paths you want to pre-render
+  // Example: fetch all IDs from your API
+  return {
+    paths: [
+      // { params: { {{paramName}}: '1' } },
+      // { params: { {{paramName}}: '2' } },
+    ],
+    fallback: 'blocking', // or true, false
+  };
+}) satisfies GetStaticPaths;
+
+export const getStaticProps = (async (context) => {
+  const { {{paramName}} } = context.params as { {{paramName}}: string };
+  
+  // Fetch data from external API or database using the {{paramName}}
+  return {
+    props: {
+      {{paramName}},
+      // Add your other props here
+    },
+  };
+}) satisfies GetStaticProps<{
+  {{paramName}}: string;
+  // Define your other props type here
+}>;
+
+export default function {{pascalCase name}}(
+  props: InferGetStaticPropsType<typeof getStaticProps>
+) {
+  const router = useRouter();
+  const { {{paramName}} } = props;
+
+  // If fallback is enabled and page is not yet generated
+  if (router.isFallback) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <>
+      <Head>
+        <title>{{pascalCase name}} | LeafInk</title>
+        <meta name="description" content="{{pascalCase name}} page" />
+      </Head>
+
+      <div className="min-h-screen p-8">
+        <h1 className="text-4xl font-bold mb-8">{{pascalCase name}}</h1>
+        <p>{{pascalCase paramName}}: { {{paramName}} }</p>
+        {/* Add your page content here */}
+      </div>
+    </>
+  );
+}

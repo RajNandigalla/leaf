@@ -1,0 +1,17 @@
+import Head from 'next/head';
+
+export default function {{pascalCase name}}() {
+  return (
+    <>
+      <Head>
+        <title>{{pascalCase name}} | LeafInk</title>
+        <meta name="description" content="{{pascalCase name}} page" />
+      </Head>
+
+      <div className="min-h-screen p-8">
+        <h1 className="text-4xl font-bold mb-8">{{pascalCase name}}</h1>
+        {/* Add your page content here */}
+      </div>
+    </>
+  );
+}
