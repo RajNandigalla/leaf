@@ -12,6 +12,23 @@ The application uses a custom `env()` utility for type-safe access to environmen
 
 - **`src/utils/env.ts`** - Type-safe environment variable utility
 - **`.env.example`** - Example environment variables
+- **`.env.local`** - Local overrides (git-ignored)
+
+## Local Development (.env.local)
+
+To set up your local environment:
+
+1. **Create `.env.local`**: Copy `.env.example` to `.env.local`.
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+2. **Configure Overrides**: Edit `.env.local` to set your local secrets and preferences.
+   - This file is ignored by Git, so it's safe for secrets.
+   - Variables in `.env.local` override defaults and other `.env` files.
+
+3. **Restart Server**: Restart the development server (`yarn dev`) to apply changes.
 
 ## Usage
 
