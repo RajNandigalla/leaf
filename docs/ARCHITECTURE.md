@@ -79,6 +79,36 @@ Type-safe environment variable access with IntelliSense. See [Environment Variab
 - **Benefits**: IntelliSense, automatic fallbacks, centralized definitions.
 - **Usage**: Replace `process.env` with `env()` for type safety.
 
+## Utilities & Form Management
+
+### Lodash
+
+Utility library for data manipulation. Import directly from `lodash`.
+
+- **Debounce/Throttle**: `_.debounce()`, `_.throttle()` for performance
+- **Data Manipulation**: `_.cloneDeep()`, `_.merge()`, `_.pick()`, `_.omit()`
+- **Array Utilities**: `_.groupBy()`, `_.chunk()`, `_.flatten()`, `_.uniq()`
+- **String Utilities**: `_.camelCase()`, `_.kebabCase()`, `_.capitalize()`
+
+**Usage**: `import _ from 'lodash'` or `import { debounce } from 'lodash'`
+
+### Immer
+
+Immutable state updates with mutable syntax.
+
+- **Usage**: Simplifies complex state updates in React and Zustand
+- **Example**: See `/playground/immer-example` for todo list demo
+- **Benefits**: More readable code, TypeScript-friendly
+
+### React Hook Form + Zod
+
+Type-safe form management with schema validation.
+
+- **React Hook Form**: Performant form state management
+- **Zod**: Schema validation with TypeScript inference
+- **Integration**: `@hookform/resolvers/zod` for seamless integration
+- **Example**: See `/playground/forms` for complete form demo
+
 ## Design System (@clover)
 
 The project uses an internal design system located in `src/@clover`. This ensures consistency across the application.
