@@ -13,118 +13,130 @@ interface EchoResponse {
     hostname: string;
     pid: number;
     platform: string;
-    nodeVersion: string;
+    node: string;
+    cpus: number;
   };
   memory: {
-    used: number;
-    total: number;
-    percentage: number;
+    system: {
+      total: string;
+      free: string;
+      usedPercent: string;
+    };
+    process: {
+      rss: string;
+      heapUsed: string;
+      rssPercent: string; // Process impact on total RAM
+    };
     status: HealthStatus;
   };
   cpu: {
     loadAverage: number[];
-    cores: number;
     loadPerCore: number;
+    loadPerCorePercent: string;
     status: HealthStatus;
   };
   warnings: string[];
 }
 
 // Thresholds
-const MEMORY_WARNING_THRESHOLD = 70; // 70%
-const MEMORY_CRITICAL_THRESHOLD = 85; // 85%
-const CPU_WARNING_THRESHOLD = 0.7; // 70% per core
-const CPU_CRITICAL_THRESHOLD = 0.9; // 90% per core
+const MEMORY_WARNING_THRESHOLD = 75; // 75% System RAM Used
+const MEMORY_CRITICAL_THRESHOLD = 90; // 90% System RAM Used
+const CPU_WARNING_THRESHOLD = 0.7; // Load avg 0.7 per core
+const CPU_CRITICAL_THRESHOLD = 0.9; // Load avg 0.9 per core
 
-function getHealthStatus(memoryPercentage: number, cpuLoadPerCore: number): HealthStatus {
-  if (memoryPercentage >= MEMORY_CRITICAL_THRESHOLD || cpuLoadPerCore >= CPU_CRITICAL_THRESHOLD) {
+function getHealthStatus(memPercent: number, cpuLoad: number): HealthStatus {
+  if (memPercent >= MEMORY_CRITICAL_THRESHOLD || cpuLoad >= CPU_CRITICAL_THRESHOLD) {
     return 'critical';
   }
-  if (memoryPercentage >= MEMORY_WARNING_THRESHOLD || cpuLoadPerCore >= CPU_WARNING_THRESHOLD) {
+  if (memPercent >= MEMORY_WARNING_THRESHOLD || cpuLoad >= CPU_WARNING_THRESHOLD) {
     return 'degraded';
   }
   return 'healthy';
 }
 
-function getMemoryStatus(percentage: number): HealthStatus {
-  if (percentage >= MEMORY_CRITICAL_THRESHOLD) return 'critical';
-  if (percentage >= MEMORY_WARNING_THRESHOLD) return 'degraded';
-  return 'healthy';
-}
-
-function getCpuStatus(loadPerCore: number): HealthStatus {
-  if (loadPerCore >= CPU_CRITICAL_THRESHOLD) return 'critical';
-  if (loadPerCore >= CPU_WARNING_THRESHOLD) return 'degraded';
-  return 'healthy';
-}
-
 export default function echo(req: NextApiRequest, res: NextApiResponse<EchoResponse>) {
-  // Only allow GET requests
   if (req.method !== 'GET') {
     res.status(405).end();
     return;
   }
 
-  // Get memory usage
-  const memUsage = process.memoryUsage();
+  // --- 1. CPU Calculation ---
+  // Polyfill for Node < 19
+  const cpuCount = os.availableParallelism ? os.availableParallelism() : os.cpus().length;
+
+  // os.loadavg() works on Linux/macOS. On Windows it returns [0,0,0].
+  const loadAvg = os.loadavg();
+
+  // Normalized load for health check (1 min avg / cores)
+  const loadPerCore = loadAvg[0] / cpuCount;
+  const loadPerCorePercent = +(loadPerCore * 100).toFixed(1);
+
+  // --- 2. Memory Calculation ---
   const totalMem = os.totalmem();
-  const usedMem = memUsage.heapUsed;
-  const memoryPercentage = Math.round((usedMem / totalMem) * 100);
+  const freeMem = os.freemem();
+  const systemUsedMem = totalMem - freeMem;
+  const systemMemPercent = +((systemUsedMem / totalMem) * 100).toFixed(1);
 
-  // Get CPU load
-  const loadAvg = os.loadavg(); // [1min, 5min, 15min]
-  const cpuCount = os.cpus().length;
-  const loadPerCore = loadAvg[0] / cpuCount; // 1-minute load average per core
+  // Process specific memory (What you asked for earlier)
+  const processMem = process.memoryUsage();
+  const processRssPercent = +((processMem.rss / totalMem) * 100).toFixed(2);
 
-  // Determine health status
-  const overallStatus = getHealthStatus(memoryPercentage, loadPerCore);
-  const memoryStatus = getMemoryStatus(memoryPercentage);
-  const cpuStatus = getCpuStatus(loadPerCore);
+  // --- 3. Determine Status ---
+  // We base health on SYSTEM memory, not just process memory
+  const overallStatus = getHealthStatus(systemMemPercent, loadPerCore);
 
-  // Build warnings array
+  let memoryStatus: HealthStatus = 'healthy';
+  if (systemMemPercent >= MEMORY_CRITICAL_THRESHOLD) memoryStatus = 'critical';
+  else if (systemMemPercent >= MEMORY_WARNING_THRESHOLD) memoryStatus = 'degraded';
+
+  let cpuStatus: HealthStatus = 'healthy';
+  if (loadPerCore >= CPU_CRITICAL_THRESHOLD) cpuStatus = 'critical';
+  else if (loadPerCore >= CPU_WARNING_THRESHOLD) cpuStatus = 'degraded';
+
+  // --- 4. Warnings ---
   const warnings: string[] = [];
-  if (memoryStatus === 'critical') {
+  if (memoryStatus !== 'healthy') {
     warnings.push(
-      `🔴 CRITICAL: Memory usage at ${memoryPercentage}% (threshold: ${MEMORY_CRITICAL_THRESHOLD}%)`
+      `Memory: System usage at ${systemMemPercent}% (Threshold: ${memoryStatus === 'critical' ? MEMORY_CRITICAL_THRESHOLD : MEMORY_WARNING_THRESHOLD}%)`
     );
-  } else if (memoryStatus === 'degraded') {
+  }
+  if (cpuStatus !== 'healthy') {
     warnings.push(
-      `⚠️ WARNING: Memory usage at ${memoryPercentage}% (threshold: ${MEMORY_WARNING_THRESHOLD}%)`
+      `CPU: Load avg per core ${loadPerCore.toFixed(2)} (Threshold: ${cpuStatus === 'critical' ? CPU_CRITICAL_THRESHOLD : CPU_WARNING_THRESHOLD})`
     );
   }
 
-  if (cpuStatus === 'critical') {
-    warnings.push(
-      `🔴 CRITICAL: CPU load at ${(loadPerCore * 100).toFixed(1)}% per core (threshold: ${CPU_CRITICAL_THRESHOLD * 100}%)`
-    );
-  } else if (cpuStatus === 'degraded') {
-    warnings.push(
-      `⚠️ WARNING: CPU load at ${(loadPerCore * 100).toFixed(1)}% per core (threshold: ${CPU_WARNING_THRESHOLD * 100}%)`
-    );
-  }
-
+  // --- 5. Response ---
   const response: EchoResponse = {
     status: overallStatus,
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    version: process.env.npm_package_version || '0.1.0',
+    version: process.env.npm_package_version || '0.0.0',
     environment: process.env.NODE_ENV || 'development',
     instance: {
       hostname: os.hostname(),
       pid: process.pid,
       platform: os.platform(),
-      nodeVersion: process.version,
+      node: process.version,
+      cpus: cpuCount,
     },
     memory: {
-      used: Math.round(usedMem / 1024 / 1024), // MB
-      total: Math.round(totalMem / 1024 / 1024), // MB
-      percentage: memoryPercentage,
+      system: {
+        total: (totalMem / 1024 / 1024 / 1024).toFixed(2) + ' GB',
+        free: (freeMem / 1024 / 1024 / 1024).toFixed(2) + ' GB',
+        usedPercent: systemMemPercent + '%',
+      },
+      process: {
+        rss: (processMem.rss / 1024 / 1024).toFixed(2) + ' MB', // Physical RAM
+        heapUsed: (processMem.heapUsed / 1024 / 1024).toFixed(2) + ' MB', // JS Objects
+        rssPercent: processRssPercent + '%',
+      },
       status: memoryStatus,
     },
     cpu: {
-      loadAverage: loadAvg.map((load) => Math.round(load * 100) / 100),
-      cores: cpuCount,
-      loadPerCore: Math.round(loadPerCore * 100) / 100,
+      loadAverage: loadAvg.map((load) => +load.toFixed(2)),
+      loadPerCore: +loadPerCore.toFixed(2),
+      loadPerCorePercent: loadPerCorePercent + ' %',
       status: cpuStatus,
     },
     warnings,
