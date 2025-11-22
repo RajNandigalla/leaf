@@ -8,6 +8,8 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import { handleRuntimeError, handleUnhandledRejection } from '@/utils/errorHandler';
 import { __hasWindow } from '@/config';
 
+import { RemoteConfigProvider } from '@/contexts/RemoteConfigContext';
+
 export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
     logVersion();
@@ -39,7 +41,9 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <ErrorBoundary>
       <ApolloProvider client={client}>
-        <Component {...pageProps} />
+        <RemoteConfigProvider>
+          <Component {...pageProps} />
+        </RemoteConfigProvider>
       </ApolloProvider>
     </ErrorBoundary>
   );
