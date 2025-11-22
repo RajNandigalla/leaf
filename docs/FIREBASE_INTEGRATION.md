@@ -33,6 +33,7 @@ We use Firebase Remote Config to manage application behavior and appearance dyna
 Add the following keys to your `.env.local` file (copied from `.env.example`):
 
 ```bash
+NEXT_PUBLIC_ENABLE_FIREBASE=true
 NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id

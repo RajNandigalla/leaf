@@ -1,5 +1,5 @@
-import { initializeApp, getApps } from 'firebase/app';
-import { getRemoteConfig } from 'firebase/remote-config';
+import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
+import { getRemoteConfig, RemoteConfig } from 'firebase/remote-config';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -10,10 +10,21 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-const remoteConfig = getRemoteConfig(app);
+let app: FirebaseApp | null = null;
+let remoteConfig: RemoteConfig | null = null;
 
-remoteConfig.settings.minimumFetchIntervalMillis = 3600000; // 1 hour default
+const isFirebaseEnabled = process.env.NEXT_PUBLIC_ENABLE_FIREBASE === 'true';
+
+if (isFirebaseEnabled) {
+  try {
+    app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+    remoteConfig = getRemoteConfig(app);
+    remoteConfig.settings.minimumFetchIntervalMillis = 3600000; // 1 hour default
+  } catch (error) {
+    console.error('Firebase initialization error:', error);
+  }
+} else {
+  console.log('Firebase is disabled via NEXT_PUBLIC_ENABLE_FIREBASE');
+}
 
 export { app, remoteConfig };

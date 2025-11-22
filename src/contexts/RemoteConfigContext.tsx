@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { fetchAndActivate } from 'firebase/remote-config';
 import { remoteConfig } from '@/lib/firebase';
+import { fetchAndActivate } from 'firebase/remote-config';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface RemoteConfigContextType {
   isLoaded: boolean;
@@ -19,13 +19,11 @@ export function RemoteConfigProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     const initRemoteConfig = async () => {
       try {
-        await fetchAndActivate(remoteConfig);
+        if (remoteConfig) await fetchAndActivate(remoteConfig!);
         setIsLoaded(true);
       } catch (err) {
         console.error('Failed to fetch remote config:', err);
         setError(err as Error);
-        // Even if it fails, we mark as loaded so the app doesn't hang (it will use defaults)
-        setIsLoaded(true);
       }
     };
 

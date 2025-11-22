@@ -7,9 +7,9 @@ export function useRemoteConfig(key: string) {
   const { isLoaded, error } = useRemoteConfigContext();
 
   const value = useMemo(() => {
-    if (isLoaded) {
-      return getValue(remoteConfig, key);
-    }
+    if (!remoteConfig) return null;
+    if (isLoaded) return getValue(remoteConfig!, key);
+
     return null;
   }, [isLoaded, key]);
 
