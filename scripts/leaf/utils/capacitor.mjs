@@ -12,19 +12,37 @@ function loadCapacitorConfig() {
         '.ts': (filepath, content) => {
           // Simple TS parsing - extract the config object
           // Match: const anyName: CapacitorConfig = { ... };
-          // or: const anyName = { ... }; (if exported as default)
+          // or: export default { ... };
           const match =
             content.match(/const\s+\w+\s*:\s*CapacitorConfig\s*=\s*(\{[\s\S]*?\});/) ||
             content.match(/export\s+default\s+(\{[\s\S]*?\});/);
 
           if (match) {
-            // Remove TypeScript types and evaluate as JS
-            const configStr = match[1]
-              .replace(/as\s+\w+/g, '') // Remove 'as Type'
-              .replace(/:\s*\w+(\[\])?/g, ''); // Remove type annotations
+            try {
+              // Extract the config object string
+              let configStr = match[1];
 
-            // Use Function constructor to safely evaluate
-            return new Function(`return ${configStr}`)();
+              // Remove TypeScript type annotations
+              configStr = configStr
+                .replace(/:\s*\w+(\[\])?(?=\s*[,}])/g, '') // Remove type annotations
+                .replace(/as\s+\w+/g, ''); // Remove 'as Type'
+
+              // Safely evaluate the object
+              // Use JSON.parse for safety, but handle unquoted keys
+              const jsonStr = configStr
+                .replace(/(\w+):/g, '"$1":') // Quote keys
+                .replace(/'/g, '"'); // Convert single quotes to double
+
+              return JSON.parse(jsonStr);
+            } catch (error) {
+              // If JSON parsing fails, try Function constructor as fallback
+              try {
+                return new Function(`return ${match[1]}`)();
+              } catch (e) {
+                console.error('Failed to parse Capacitor config:', e);
+                return null;
+              }
+            }
           }
           return null;
         },

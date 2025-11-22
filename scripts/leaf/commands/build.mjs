@@ -32,27 +32,58 @@ export default (program) => {
         console.log(chalk.gray('   Skipping web build (using live server)\n'));
       }
 
-      let buildMode = 'all'; // default
+      let buildMode = skipBuild ? 'sync-only' : 'all'; // Skip build if server URL configured
       let shouldSync = options.sync;
+      let syncPlatform = 'all'; // all, android, or ios
 
-      // If no specific flags provided, ask interactively
-      if (process.argv.slice(3).length === 0) {
+      // Only show prompt if not using live reload
+      if (!skipBuild) {
         const answers = await inquirer.prompt([
           {
-            type: 'list',
-            name: 'mode',
+            type: 'rawlist',
+            name: 'buildMode',
             message: 'Select build mode:',
             choices: [
-              { name: '🚀 Build & Sync All (Default)', value: 'all' },
-              { name: '🍎 Build & Sync iOS', value: 'ios' },
-              { name: '🤖 Build & Sync Android', value: 'android' },
-              { name: '🏗️  Build Only (No Sync)', value: 'build-only' },
-              { name: '🔄 Sync Only (All)', value: 'sync-only' },
+              { name: 'Build web app and sync', value: 'all' },
+              { name: 'Build web app only (no sync)', value: 'web-only' },
+              { name: 'Sync only (no build)', value: 'sync-only' },
             ],
+            default: 0,
+          },
+          {
+            type: 'rawlist',
+            name: 'platform',
+            message: 'Select platform to sync:',
+            choices: [
+              { name: 'All platforms', value: 'all' },
+              { name: 'Android only', value: 'android' },
+              { name: 'iOS only', value: 'ios' },
+            ],
+            default: 0,
+            when: (answers) => answers.buildMode !== 'web-only',
           },
         ]);
-        buildMode = answers.mode;
-        if (buildMode === 'build-only') shouldSync = false;
+
+        buildMode = answers.buildMode;
+        shouldSync = buildMode !== 'web-only';
+        syncPlatform = answers.platform || 'all';
+      } else {
+        // When live reload is detected, still ask which platform to sync
+        console.log(''); // Add spacing
+        const platformAnswer = await inquirer.prompt([
+          {
+            type: 'rawlist',
+            name: 'platform',
+            message: 'Select platform to sync:',
+            choices: [
+              { name: 'All platforms', value: 'all' },
+              { name: 'Android only', value: 'android' },
+              { name: 'iOS only', value: 'ios' },
+            ],
+            default: 0,
+          },
+        ]);
+        syncPlatform = platformAnswer.platform;
       }
 
       try {
@@ -76,15 +107,15 @@ export default (program) => {
           console.log(chalk.gray('⏭️  Skipping web build (server URL configured)\n'));
         }
 
-        // Sync with Capacitor
-        if (shouldSync && buildMode !== 'build-only') {
+        // Sync with Capacitor (if needed)
+        if (shouldSync) {
           const syncSpinner = ora('Syncing with Capacitor...').start();
           try {
-            let syncCmd = 'npx cap sync';
-            if (buildMode === 'ios') syncCmd = 'npx cap sync ios';
-            if (buildMode === 'android') syncCmd = 'npx cap sync android';
-
-            await runCommand(syncCmd);
+            if (syncPlatform === 'all') {
+              await runCommand('npx cap sync');
+            } else {
+              await runCommand(`npx cap sync ${syncPlatform}`);
+            }
             syncSpinner.succeed(chalk.green('Synced with Capacitor'));
           } catch (error) {
             syncSpinner.fail(chalk.red('Sync failed'));

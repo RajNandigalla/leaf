@@ -28,7 +28,7 @@ export default (program) => {
         const popular = getPopularPlugins();
         const answers = await inquirer.prompt([
           {
-            type: 'list',
+            type: 'rawlist',
             name: 'plugin',
             message: 'Select a plugin to add:',
             choices: [
@@ -58,7 +58,7 @@ export default (program) => {
 
           const selectAnswers = await inquirer.prompt([
             {
-              type: 'list',
+              type: 'rawlist',
               name: 'plugin',
               message: 'Select a plugin:',
               choices: results.map((r) => ({
@@ -131,7 +131,7 @@ export default (program) => {
 
         const answers = await inquirer.prompt([
           {
-            type: 'list',
+            type: 'rawlist',
             name: 'plugin',
             message: 'Select a plugin to remove:',
             choices: installed.map((p) => ({

@@ -55,7 +55,7 @@ export default (program) => {
 
       const answers = await inquirer.prompt([
         {
-          type: 'list',
+          type: 'rawlist',
           name: 'buildType',
           message: 'Select build type:',
           choices: [
@@ -85,7 +85,7 @@ export default (program) => {
         if (answers.bumpVersion) {
           const versionAnswers = await inquirer.prompt([
             {
-              type: 'list',
+              type: 'rawlist',
               name: 'versionType',
               message: 'Version bump type:',
               choices: [
@@ -274,7 +274,7 @@ export default (program) => {
         if (answers.bumpVersion) {
           const versionAnswers = await inquirer.prompt([
             {
-              type: 'list',
+              type: 'rawlist',
               name: 'versionType',
               message: 'Version bump type:',
               choices: [
