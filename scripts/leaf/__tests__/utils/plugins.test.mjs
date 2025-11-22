@@ -208,4 +208,212 @@ describe('plugins utils', () => {
       expect(plugins).toContain('@capacitor/filesystem');
     });
   });
+
+  describe('edge cases', () => {
+    it('should handle plugins with devDependencies', () => {
+      mockFs.readFileSync.mockImplementation((path) => {
+        if (path.includes('leaf.json')) {
+          return JSON.stringify({
+            plugins: {
+              '@capacitor/camera': '^6.0.0',
+            },
+          });
+        }
+        if (path.includes('package.json')) {
+          return JSON.stringify({
+            devDependencies: {
+              '@capacitor/camera': '^6.0.0',
+            },
+          });
+        }
+      });
+
+      const plugins = getInstalledPlugins();
+
+      expect(plugins[0].installed).toBe(true);
+    });
+
+    it('should handle version mismatches', () => {
+      mockFs.readFileSync.mockImplementation((path) => {
+        if (path.includes('leaf.json')) {
+          return JSON.stringify({
+            plugins: {
+              '@capacitor/camera': '^6.0.0',
+            },
+          });
+        }
+        if (path.includes('package.json')) {
+          return JSON.stringify({
+            dependencies: {
+              '@capacitor/camera': '^5.0.0',
+            },
+          });
+        }
+      });
+
+      const plugins = getInstalledPlugins();
+
+      expect(plugins[0].installed).toBe(true);
+      expect(plugins[0].installedVersion).toBe('^5.0.0');
+      expect(plugins[0].version).toBe('^6.0.0');
+    });
+
+    it('should filter out core packages from search', async () => {
+      mockRunCommand.mockResolvedValue(
+        JSON.stringify([
+          {
+            name: '@capacitor/camera',
+            version: '6.0.0',
+            description: 'Camera plugin',
+          },
+          {
+            name: '@capacitor/core',
+            version: '6.0.0',
+            description: 'Core',
+          },
+          {
+            name: '@capacitor/cli',
+            version: '6.0.0',
+            description: 'CLI',
+          },
+          {
+            name: '@capacitor/ios',
+            version: '6.0.0',
+            description: 'iOS platform',
+          },
+          {
+            name: '@capacitor/android',
+            version: '6.0.0',
+            description: 'Android platform',
+          },
+        ])
+      );
+
+      const results = await searchPlugins('');
+
+      expect(results).toHaveLength(1);
+      expect(results[0].name).toBe('@capacitor/camera');
+    });
+
+    it('should handle npm view with detailed info', async () => {
+      mockRunCommand.mockResolvedValue(
+        JSON.stringify({
+          name: '@capacitor/camera',
+          version: '6.0.0',
+          description: 'Camera plugin for Capacitor',
+          keywords: ['capacitor', 'camera', 'photo'],
+          license: 'MIT',
+        })
+      );
+
+      const info = await getPluginInfo('@capacitor/camera');
+
+      expect(info.name).toBe('@capacitor/camera');
+      expect(info.keywords).toContain('capacitor');
+      expect(info.license).toBe('MIT');
+    });
+
+    it('should handle search with no results', async () => {
+      mockRunCommand.mockResolvedValue(JSON.stringify([]));
+
+      const results = await searchPlugins('nonexistent');
+
+      expect(results).toEqual([]);
+    });
+
+    it('should handle adding plugin to empty config', () => {
+      mockFs.readFileSync.mockReturnValue(
+        JSON.stringify({
+          dependencies: {},
+        })
+      );
+
+      addPluginToConfig('@capacitor/camera', '^6.0.0');
+
+      expect(mockFs.writeFileSync).toHaveBeenCalled();
+      const writtenContent = JSON.parse(mockFs.writeFileSync.mock.calls[0][1]);
+      expect(writtenContent.plugins).toBeDefined();
+      expect(writtenContent.dependencies).toBeDefined();
+    });
+
+    it('should handle removing non-existent plugin', () => {
+      mockFs.readFileSync.mockReturnValue(
+        JSON.stringify({
+          plugins: {
+            '@capacitor/camera': '^6.0.0',
+          },
+        })
+      );
+
+      const result = removePluginFromConfig('@capacitor/filesystem');
+
+      expect(result).toBe(false);
+      expect(mockFs.writeFileSync).not.toHaveBeenCalled();
+    });
+
+    it('should handle search with query parameter', async () => {
+      mockRunCommand.mockResolvedValue(
+        JSON.stringify([
+          {
+            name: '@capacitor/camera',
+            version: '6.0.0',
+            description: 'Camera plugin',
+          },
+        ])
+      );
+
+      await searchPlugins('camera');
+
+      expect(mockRunCommand).toHaveBeenCalledWith('npm search @capacitor/camera --json');
+    });
+
+    it('should handle plugins without description', async () => {
+      mockRunCommand.mockResolvedValue(
+        JSON.stringify([
+          {
+            name: '@capacitor/test-plugin',
+            version: '1.0.0',
+            // No description field
+          },
+        ])
+      );
+
+      const results = await searchPlugins('test');
+
+      expect(results).toHaveLength(1);
+      expect(results[0].description).toBe('No description');
+    });
+
+    it('should search all plugins when query is empty', async () => {
+      mockRunCommand.mockResolvedValue(
+        JSON.stringify([
+          {
+            name: '@capacitor/camera',
+            version: '6.0.0',
+            description: 'Camera',
+          },
+        ])
+      );
+
+      await searchPlugins('');
+
+      expect(mockRunCommand).toHaveBeenCalledWith('npm search @capacitor/ --json');
+    });
+
+    it('should search all plugins when no query provided', async () => {
+      mockRunCommand.mockResolvedValue(
+        JSON.stringify([
+          {
+            name: '@capacitor/filesystem',
+            version: '6.0.0',
+            description: 'File system',
+          },
+        ])
+      );
+
+      await searchPlugins();
+
+      expect(mockRunCommand).toHaveBeenCalledWith('npm search @capacitor/ --json');
+    });
+  });
 });
