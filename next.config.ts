@@ -2,17 +2,44 @@ import type { NextConfig } from 'next';
 import { withSentryConfig } from '@sentry/nextjs';
 import withBundleAnalyzer from '@next/bundle-analyzer';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { i18n } = require('./next-i18next.config');
-
 const bundleAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 });
 
+// Check if building for Capacitor (static export)
+const isCapacitorBuild = process.env.CAPACITOR_BUILD === 'true';
+
+// Only load i18n config if not building for Capacitor
+let i18nConfig = {};
+if (!isCapacitorBuild) {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { i18n } = require('./next-i18next.config');
+    i18nConfig = { i18n };
+  } catch (error) {
+    console.warn('i18n config not found, skipping...');
+  }
+}
+
 const nextConfig: NextConfig = {
-  i18n,
+  ...i18nConfig,
   /* config options here */
   reactStrictMode: true,
+
+  // Conditional config based on build target
+  ...(isCapacitorBuild && {
+    output: 'export',
+    distDir: 'out',
+    images: {
+      unoptimized: true,
+    },
+  }),
+
+  // Standard config (non-Capacitor builds)
+  ...(!isCapacitorBuild &&
+    {
+      // Add any SSR-specific config here
+    }),
 
   // Security headers (fallback, middleware handles most cases)
   async headers() {
@@ -60,9 +87,6 @@ const sentryOptions = {
 
   // Transpiles SDK to be compatible with IE11 (increases bundle size)
   transpileClientSDK: true,
-
-  // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
-  tunnelRoute: '/monitoring',
 
   // Hides source maps from generated client bundles
   hideSourceMaps: true,

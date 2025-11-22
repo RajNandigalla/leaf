@@ -3,7 +3,7 @@
     "description": "Capacitor and native platform dependencies",
     "version": "1.0.0",
     "scripts": {
-        "build": "npm run build"
+        "build": "npm run build:mobile"
     },
     "webDir": "out",
     "dependencies": {
