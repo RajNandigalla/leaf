@@ -13,6 +13,7 @@
     "leaf": "node ./packages/cli/index.mjs",
     "commit": "cz",
     "test": "jest",
+    "test:cli": "NODE_OPTIONS=--experimental-vm-modules jest --config jest.cli.config.js",
     "test:e2e": "playwright test",
     "generate": "plop",
     "release": "standard-version",

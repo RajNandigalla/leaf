@@ -1,13 +1,13 @@
 const jestConfig = {
   testEnvironment: 'node',
   transform: {}, // Disable transformation for native ESM
-  testMatch: ['**/scripts/leaf/__tests__/**/*.test.mjs'],
+  testMatch: ['**/packages/cli/__tests__/**/*.test.mjs'],
   moduleFileExtensions: ['js', 'mjs', 'json', 'node'],
   collectCoverage: true,
   collectCoverageFrom: [
-    'scripts/leaf/commands/**/*.mjs',
-    'scripts/leaf/utils/**/*.mjs',
-    '!scripts/leaf/**/__tests__/**',
+    'packages/cli/commands/**/*.mjs',
+    'packages/cli/utils/**/*.mjs',
+    '!packages/cli/**/__tests__/**',
   ],
   coverageReporters: ['text', 'text-summary', 'html', 'lcov'],
   coverageDirectory: 'coverage/cli',
