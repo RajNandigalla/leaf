@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Camera } from '@capacitor/camera';
-import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
+import { CapacitorBarcodeScanner } from '@capacitor/barcode-scanner';
 import { Preferences } from '@capacitor/preferences';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Dialog } from '@capacitor/dialog';
+import { CapacitorShake } from '@capgo/capacitor-shake';
 import LensLoader from './plugins/LensLoader';
 import styles from './App.module.scss';
 
@@ -13,6 +14,28 @@ function App() {
 
   useEffect(() => {
     loadHistory();
+
+    // Add Shake Listener
+    const addShakeListener = async () => {
+      try {
+        await CapacitorShake.addListener('shake', async () => {
+          const { value } = await Dialog.confirm({
+            title: 'Leaf Lens Menu',
+            message: 'What would you like to do?',
+            okButtonTitle: '🏠 Go Home',
+            cancelButtonTitle: 'Cancel',
+          });
+
+          if (value) {
+            await LensLoader.resetServerUrl();
+          }
+        });
+      } catch (e) {
+        console.error('Failed to add shake listener', e);
+      }
+    };
+
+    addShakeListener();
   }, []);
 
   const loadHistory = async () => {
@@ -30,34 +53,28 @@ function App() {
 
   const startScan = async () => {
     try {
-      const status = await Camera.requestPermissions();
-      if (status.camera !== 'granted') {
-        alert('Camera permission denied');
-        return;
-      }
-
       setIsScanning(true);
       document.body.classList.add('barcode-scanner-active');
 
-      await BarcodeScanner.addListener('barcodesScanned', async (result) => {
-        await stopScan();
-        if (result.barcodes.length > 0 && result.barcodes[0].displayValue) {
-          handleUrl(result.barcodes[0].displayValue);
-        }
+      // Start scanning using static method
+      const result = await CapacitorBarcodeScanner.scanBarcode({
+        hint: 17, // ALL barcode types
       });
 
-      await BarcodeScanner.startScan();
+      if (result.ScanResult) {
+        handleUrl(result.ScanResult);
+      }
+
+      stopScan();
     } catch (e) {
       console.error(e);
       stopScan();
     }
   };
 
-  const stopScan = async () => {
+  const stopScan = () => {
     setIsScanning(false);
     document.body.classList.remove('barcode-scanner-active');
-    await BarcodeScanner.removeAllListeners();
-    await BarcodeScanner.stopScan();
   };
 
   const handleUrl = async (inputUrl: string) => {

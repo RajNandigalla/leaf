@@ -1,6 +1,7 @@
 package com.leafink.lens;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -32,7 +33,11 @@ public class LensLoaderPlugin extends Plugin {
 
     // 3. Restart the Activity on the main thread to apply changes
     getActivity().runOnUiThread(() -> {
-      getActivity().recreate();
+      Intent intent = new Intent(getContext(), getActivity().getClass());
+      intent.putExtra("dynamic_url", newUrl);
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+      getContext().startActivity(intent);
+      getActivity().finish();
     });
   }
 

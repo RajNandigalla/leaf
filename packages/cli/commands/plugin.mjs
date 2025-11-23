@@ -108,6 +108,26 @@ export default (program) => {
         console.error(chalk.red(error.message));
         process.exit(1);
       }
+
+      // Suggest sync
+      const syncAnswers = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'shouldSync',
+          message: 'Do you want to sync the project now?',
+          default: true,
+        },
+      ]);
+
+      if (syncAnswers.shouldSync) {
+        try {
+          console.log(chalk.gray('\nSyncing...'));
+          await runCommand('npx cap sync');
+          console.log(chalk.green('✅ Project synced successfully.'));
+        } catch (error) {
+          console.error(chalk.red('❌ Sync failed:'), error.message);
+        }
+      }
     });
 
   // Remove plugin

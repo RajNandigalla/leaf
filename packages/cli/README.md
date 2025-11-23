@@ -14,6 +14,7 @@ A powerful command-line interface for managing Capacitor mobile app development 
   - [leaf status](#leaf-status)
   - [leaf build](#leaf-build)
   - [leaf run](#leaf-run)
+  - [leaf sync](#leaf-sync)
   - [leaf plugin](#leaf-plugin)
   - [leaf cert](#leaf-cert)
   - [leaf release](#leaf-release)
@@ -332,6 +333,39 @@ npm run leaf run ios
 
 ---
 
+### `leaf sync`
+
+Sync app with iOS or Android Simulator/Device.
+
+```bash
+npm run leaf sync [platform]
+```
+
+**Platforms:**
+
+- `android` - Sync Android project
+- `ios` - Sync iOS project
+
+**What it does:**
+
+- Runs `npx cap sync` for the selected platform(s)
+- Updates native projects with latest web assets and plugins
+
+**Interactive mode:**
+If no platform specified, allows you to select platforms to sync.
+
+**Example:**
+
+```bash
+# Interactive selection
+npm run leaf sync
+
+# Sync specific platform
+npm run leaf sync ios
+```
+
+---
+
 ### `leaf plugin`
 
 Manage Capacitor plugins.
@@ -357,6 +391,7 @@ If no plugin specified, shows popular plugins to choose from.
 - Adds to `leaf.json` plugins section
 - Installs via npm
 - Updates configuration
+- **Suggests syncing** the project after installation
 
 **Example:**
 

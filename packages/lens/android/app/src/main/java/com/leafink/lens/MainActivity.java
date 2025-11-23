@@ -16,16 +16,14 @@ public class MainActivity extends BridgeActivity {
 
   @Override
   protected void load() {
-    // 1. Check SharedPreferences for a saved URL
-    SharedPreferences prefs = getSharedPreferences("CapServerPrefs", MODE_PRIVATE);
-    String customUrl = prefs.getString("server_url", null);
+    String dynamicUrl = getIntent().getStringExtra("dynamic_url");
 
     // 2. If a custom URL exists, create a dynamic configuration
-    if (customUrl != null && !customUrl.isEmpty()) {
+    if (dynamicUrl != null && !dynamicUrl.isEmpty()) {
       // We use the Builder to create a new config based on the current context
       // and override the Server URL.
       this.config = new CapConfig.Builder(this)
-        .setServerUrl(customUrl)
+        .setServerUrl(dynamicUrl)
         // You might need to set 'hostname' to allow CORS/Cookies if your server expects it
         // .setHostname("your-api-domain.com")
         .create();

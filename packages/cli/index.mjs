@@ -33,6 +33,7 @@ import infoCommand from './commands/info.mjs';
 import certCommand from './commands/cert.mjs';
 import releaseCommand from './commands/release.mjs';
 import lensCommand from './commands/lens.mjs';
+import syncCommand from './commands/sync.mjs';
 
 installCommand(program);
 statusCommand(program);
@@ -40,6 +41,7 @@ setupCommand(program);
 uninstallCommand(program);
 buildCommand(program);
 runCommand(program);
+syncCommand(program);
 doctorCommand(program);
 initCommand(program);
 pluginCommand(program);

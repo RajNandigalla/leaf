@@ -86,6 +86,9 @@ describe('leaf plugin', () => {
     it('should add a plugin directly', async () => {
       pluginCommand(program);
 
+      // Mock sync prompt
+      mockInquirer.prompt.mockResolvedValue({ shouldSync: false });
+
       await addAction('test-plugin');
 
       expect(mockPluginsUtils.getPluginInfo).toHaveBeenCalledWith('test-plugin');
@@ -96,9 +99,13 @@ describe('leaf plugin', () => {
     it('should prompt if no plugin specified', async () => {
       pluginCommand(program);
 
-      mockInquirer.prompt.mockResolvedValueOnce({
-        plugin: '@capacitor/camera',
-      });
+      mockInquirer.prompt
+        .mockResolvedValueOnce({
+          plugin: '@capacitor/camera',
+        })
+        .mockResolvedValueOnce({
+          shouldSync: false,
+        });
 
       await addAction();
 
@@ -106,6 +113,38 @@ describe('leaf plugin', () => {
         '@capacitor/camera',
         '^1.0.0'
       );
+    });
+
+    it('should sync if confirmed', async () => {
+      pluginCommand(program);
+
+      mockInquirer.prompt
+        .mockResolvedValueOnce({
+          plugin: '@capacitor/camera',
+        })
+        .mockResolvedValueOnce({
+          shouldSync: true,
+        });
+
+      await addAction();
+
+      expect(mockExec.runCommand).toHaveBeenCalledWith('npx cap sync');
+    });
+
+    it('should not sync if declined', async () => {
+      pluginCommand(program);
+
+      mockInquirer.prompt
+        .mockResolvedValueOnce({
+          plugin: '@capacitor/camera',
+        })
+        .mockResolvedValueOnce({
+          shouldSync: false,
+        });
+
+      await addAction();
+
+      expect(mockExec.runCommand).not.toHaveBeenCalledWith('npx cap sync');
     });
   });
 

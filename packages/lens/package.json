@@ -11,16 +11,18 @@
     "leaf": "node ../cli/index.mjs"
   },
   "dependencies": {
-    "@capacitor-mlkit/barcode-scanning": "^7.4.0",
+    "@capacitor/action-sheet": "^7.0.2",
     "@capacitor/android": "^7.4.4",
     "@capacitor/app": "^7.1.0",
     "@capacitor/barcode-scanner": "^2.2.0",
     "@capacitor/camera": "^7.0.2",
     "@capacitor/cli": "^7.4.4",
     "@capacitor/core": "^7.4.4",
+    "@capacitor/dialog": "^7.0.2",
     "@capacitor/haptics": "^7.0.2",
     "@capacitor/ios": "^7.4.4",
     "@capacitor/preferences": "^7.0.2",
+    "@capgo/capacitor-shake": "^7.2.17",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
