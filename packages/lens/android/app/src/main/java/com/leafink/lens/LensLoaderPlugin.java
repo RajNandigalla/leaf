@@ -35,9 +35,16 @@ public class LensLoaderPlugin extends Plugin {
     getActivity().runOnUiThread(() -> {
       Intent intent = new Intent(getContext(), getActivity().getClass());
       intent.putExtra("dynamic_url", newUrl);
-      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+      // NOTE: We removed the FLAG_ACTIVITY_CLEAR_TASK and finish()
+      // This tells Android to stack this new activity on top of the old one.
+      // intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+      // Intent.FLAG_ACTIVITY_CLEAR_TASK);
       getContext().startActivity(intent);
-      getActivity().finish();
+
+      // NOTE: We removed the finish() call
+      // This allows the user to go back to the previous activity if they want to
+      // getActivity().finish();
     });
   }
 
