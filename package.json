@@ -10,7 +10,7 @@
     "analyze": "ANALYZE=true next build --webpack",
     "lint": "eslint",
     "prepare": "husky",
-    "leaf": "node ./packages/leaf/index.mjs",
+    "leaf": "node ./packages/cli/index.mjs",
     "commit": "cz",
     "test": "jest",
     "test:e2e": "playwright test",

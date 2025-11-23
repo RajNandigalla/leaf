@@ -1,7 +1,7 @@
 # LeafInk
 
-[![CI](https://github.com/YOUR_USERNAME/leaf-ink/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/leaf-ink/actions/workflows/ci.yml)
-[![E2E Tests](https://github.com/YOUR_USERNAME/leaf-ink/actions/workflows/e2e.yml/badge.svg)](https://github.com/YOUR_USERNAME/leaf-ink/actions/workflows/e2e.yml)
+[![CI](https://github.com/RajNandigalla/leaf/actions/workflows/ci.yml/badge.svg)](https://github.com/RajNandigalla/leaf/actions/workflows/ci.yml)
+[![E2E Tests](https://github.com/RajNandigalla/leaf/actions/workflows/e2e.yml/badge.svg)](https://github.com/RajNandigalla/leaf/actions/workflows/e2e.yml)
 
 LeafInk is a modern web application built with Next.js, designed to provide a seamless and interactive user experience.
 
@@ -35,8 +35,8 @@ LeafInk is a modern web application built with Next.js, designed to provide a se
 1.  Clone the repository:
 
     ```bash
-    git clone https://github.com/your-username/leaf-ink.git
-    cd leaf-ink
+    git clone https://github.com/RajNandigalla/leaf.git
+    cd leaf
     ```
 
 2.  Install dependencies:
