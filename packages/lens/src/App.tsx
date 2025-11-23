@@ -4,6 +4,7 @@ import { Preferences } from '@capacitor/preferences';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { CapacitorShake } from '@capgo/capacitor-shake';
 import { Device } from '@capacitor/device';
+import { QRCodeSVG } from 'qrcode.react';
 import {
   Settings,
   ChevronRight,
@@ -22,6 +23,7 @@ import {
   Loader2,
   Inbox,
   Star,
+  Share2,
 } from 'lucide-react';
 import LensLoader from './plugins/LensLoader';
 import styles from './App.module.scss';
@@ -75,6 +77,9 @@ function App() {
     osVersion: string;
     manufacturer: string;
   } | null>(null);
+  const [showQR, setShowQR] = useState(false);
+  const [isClosingQR, setIsClosingQR] = useState(false);
+  const [qrUrl, setQrUrl] = useState('');
 
   useEffect(() => {
     loadHistory();
@@ -298,6 +303,20 @@ function App() {
     }, 300);
   };
 
+  const showQRCode = (url: string) => {
+    setQrUrl(url);
+    setShowQR(true);
+  };
+
+  const closeQR = () => {
+    setIsClosingQR(true);
+    setTimeout(() => {
+      setShowQR(false);
+      setIsClosingQR(false);
+      setQrUrl('');
+    }, 300);
+  };
+
   return (
     <div className={styles.container}>
       {!isScanning && (
@@ -430,6 +449,16 @@ function App() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
+                          showQRCode(h.url);
+                        }}
+                        className={styles.shareButton}
+                        title="Generate QR Code"
+                      >
+                        <Share2 size={18} />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
                           deleteHistoryItem(h.url);
                         }}
                         className={styles.deleteButton}
@@ -534,6 +563,28 @@ function App() {
               </p>
             </section>
 
+            {deviceInfo && (
+              <section className={styles.settingsSection}>
+                <h3>Device Info</h3>
+                <div className={styles.appInfo}>
+                  <div className={styles.infoRow}>
+                    <span>Model</span>
+                    <span>{deviceInfo.model}</span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span>Manufacturer</span>
+                    <span>{deviceInfo.manufacturer}</span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span>OS</span>
+                    <span>
+                      {deviceInfo.platform} {deviceInfo.osVersion}
+                    </span>
+                  </div>
+                </div>
+              </section>
+            )}
+
             <section className={styles.settingsSection}>
               <h3>App Info</h3>
               <div className={styles.appInfo}>
@@ -543,7 +594,7 @@ function App() {
                 </div>
                 <div className={styles.infoRow}>
                   <span>Platform</span>
-                  <span>Android</span>
+                  <span>{deviceInfo?.platform || 'Web'}</span>
                 </div>
               </div>
             </section>
@@ -626,6 +677,27 @@ function App() {
             </div>
             <button onClick={closeHelp} className={styles.helpCloseButton}>
               Got it
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* QR Code Bottom Sheet */}
+      {showQR && (
+        <div className={styles.bottomSheetOverlay} onClick={closeQR}>
+          <div
+            className={`${styles.bottomSheet} ${styles.qrSheet} ${isClosingQR ? styles.closing : ''}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.sheetHandle}></div>
+            <h2>QR Code</h2>
+            <p className={styles.qrMessage}>Scan this QR code to open the URL</p>
+            <div className={styles.qrCodeContainer}>
+              <QRCodeSVG value={qrUrl} size={256} level="H" includeMargin={true} />
+            </div>
+            <div className={styles.qrUrl}>{qrUrl}</div>
+            <button onClick={closeQR} className={styles.qrCloseButton}>
+              Close
             </button>
           </div>
         </div>
