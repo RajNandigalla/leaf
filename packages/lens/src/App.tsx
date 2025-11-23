@@ -3,6 +3,7 @@ import { Camera } from '@capacitor/camera';
 import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { Preferences } from '@capacitor/preferences';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import LensLoader from './plugins/LensLoader';
 import styles from './App.module.scss';
 
 function App() {
@@ -67,7 +68,13 @@ function App() {
 
     await Haptics.impact({ style: ImpactStyle.Medium });
     await saveHistory(finalUrl);
-    window.location.href = finalUrl;
+
+    try {
+      await LensLoader.setServerUrl({ url: finalUrl });
+    } catch (error) {
+      console.error('Failed to load URL:', error);
+      alert('Failed to load URL---' + JSON.stringify(error));
+    }
   };
 
   return (
