@@ -55,6 +55,7 @@ export default (program) => {
           description: 'Capacitor and native platform dependencies',
           version: '1.0.0',
           scripts: {
+            dev: 'npm run dev',
             build: 'npm run build',
           },
           webDir: 'dist',

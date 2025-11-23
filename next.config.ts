@@ -16,7 +16,8 @@ if (!isCapacitorBuild) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { i18n } = require('./next-i18next.config');
     i18nConfig = { i18n };
-  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (_error) {
     console.warn('i18n config not found, skipping...');
   }
 }

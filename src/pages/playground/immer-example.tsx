@@ -51,8 +51,9 @@ export default function ImmerExample() {
     );
   };
 
-  // Without Immer (for comparison)
-  const toggleTodoWithoutImmer = (id: number) => {
+  // Without Immer (for comparison - kept for documentation)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _toggleTodoWithoutImmer = (id: number) => {
     setTodos(
       todos.map((todo) => (todo.id === id ? { ...todo, completed: !todo.completed } : todo))
     );

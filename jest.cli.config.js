@@ -1,4 +1,4 @@
-export default {
+const jestConfig = {
   testEnvironment: 'node',
   transform: {}, // Disable transformation for native ESM
   testMatch: ['**/scripts/leaf/__tests__/**/*.test.mjs'],
@@ -20,3 +20,5 @@ export default {
     },
   },
 };
+
+export default jestConfig;
