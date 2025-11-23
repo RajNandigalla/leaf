@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { App as CapacitorApp } from '@capacitor/app';
 import { CapacitorBarcodeScanner } from '@capacitor/barcode-scanner';
 import { Preferences } from '@capacitor/preferences';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -98,17 +99,72 @@ function App() {
       }
     };
 
+    // Add Deep Link Listener
+    const addDeepLinkListener = async () => {
+      CapacitorApp.addListener('appUrlOpen', (data) => {
+        try {
+          const urlObj = new URL(data.url);
+          // Check if it's our scheme
+          if (urlObj.protocol === 'leaflens:') {
+            const targetUrl = urlObj.searchParams.get('url');
+            if (targetUrl) {
+              handleUrl(targetUrl);
+            }
+          }
+        } catch (e) {
+          console.error('Error parsing deep link:', e);
+        }
+      });
+    };
+
     addShakeListener();
+    addDeepLinkListener();
 
     // Listen for network changes
-    window.addEventListener('online', () => setIsOnline(true));
-    window.addEventListener('offline', () => setIsOnline(false));
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
 
     return () => {
-      window.removeEventListener('online', () => setIsOnline(true));
-      window.removeEventListener('offline', () => setIsOnline(false));
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+      CapacitorApp.removeAllListeners();
     };
   }, []);
+
+  // Handle Back Button
+  useEffect(() => {
+    const handleBackButton = ({ canGoBack }: any) => {
+      if (showSettings) {
+        closeSettings();
+      } else if (showHelp) {
+        closeHelp();
+      } else if (showQR) {
+        closeQR();
+      } else if (showClearConfirm) {
+        closeClearConfirm();
+      } else if (showModal) {
+        setShowModal(false);
+      } else if (isScanning) {
+        stopScan();
+      } else if (!canGoBack) {
+        CapacitorApp.exitApp();
+      }
+    };
+
+    const setupListener = async () => {
+      const listener = await CapacitorApp.addListener('backButton', handleBackButton);
+      return listener;
+    };
+
+    const listenerPromise = setupListener();
+
+    return () => {
+      listenerPromise.then((listener) => listener.remove());
+    };
+  }, [showSettings, showHelp, showQR, showClearConfirm, showModal, isScanning]);
 
   // Apply theme to document root
   useEffect(() => {
