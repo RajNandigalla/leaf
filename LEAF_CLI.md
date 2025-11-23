@@ -9,6 +9,7 @@ A powerful command-line interface for managing Capacitor mobile app development 
 - [Commands](#commands)
   - [leaf init](#leaf-init)
   - [leaf install](#leaf-install)
+  - [leaf lens](#leaf-lens)
   - [leaf setup](#leaf-setup)
   - [leaf status](#leaf-status)
   - [leaf build](#leaf-build)
@@ -149,6 +150,37 @@ npm run leaf install -- --core-only
 
 # Install only platforms
 npm run leaf install -- --platforms-only
+```
+
+---
+
+### `leaf lens`
+
+Start dev server and generate QR code for Leaf Lens.
+
+```bash
+npm run leaf lens [options]
+```
+
+**Options:**
+
+- `-p, --port <number>` - Port to run on (default: 3000)
+
+**What it does:**
+
+- Detects your local LAN IP address
+- Generates a QR code pointing to your dev server
+- Starts the Next.js development server
+- Allows you to preview your app using the Leaf Lens mobile app
+
+**Example:**
+
+```bash
+# Start on default port (3000)
+npm run leaf lens
+
+# Start on custom port
+npm run leaf lens -- -p 3001
 ```
 
 ---
