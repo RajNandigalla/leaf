@@ -143,7 +143,6 @@ function App() {
     };
   }, [showSettings, showPlugins, showHelp, showQR, showClearConfirm, isScanning]);
 
-  // Apply theme to document root
   // Apply theme to document root and status bar
   useEffect(() => {
     const applyTheme = async () => {
