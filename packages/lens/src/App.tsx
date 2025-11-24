@@ -395,7 +395,27 @@ function App() {
           {/* Header */}
           <header className={styles.header}>
             <div className={styles.logo}>
-              <span className={styles.logoIcon}>🌿</span>
+              <div style={{ display: 'flex' }}>
+                <div
+                  style={{
+                    height: '1.5rem',
+                    width: '1.5rem',
+                    borderRadius: '0 10px 0px 10px',
+                    background: 'rgb(43, 147, 72)',
+                    border: '1px solid rgb(43, 147, 72)',
+                  }}
+                ></div>
+                <div
+                  style={{
+                    height: '0.5rem',
+                    width: '0.5rem',
+                    borderRadius: '50%',
+                    background: 'rgb(43, 147, 72)',
+                    border: '1px solid rgb(43, 147, 72)',
+                    marginLeft: '2px',
+                  }}
+                ></div>
+              </div>
               <h1>Leaf Lens</h1>
             </div>
             <div className={styles.headerActions}>
@@ -422,17 +442,14 @@ function App() {
 
           {/* Main Content */}
           <main className={styles.main}>
-            <div className={styles.card}>
-              <div className={styles.cardHeader}>
-                <div className={styles.cardTitleGroup}>
-                  <span className={styles.cardIcon}>📱</span>
-                  <span className={styles.cardTitle}>Development servers</span>
-                </div>
-                <button onClick={() => setShowHelp(true)} className={styles.helpButton}>
-                  <Info size={18} />
-                </button>
-              </div>
+            <div className={styles.historyHeader}>
+              <h3>Development servers</h3>
+              <button onClick={() => setShowHelp(true)} className={styles.helpButton}>
+                <Info size={18} />
+              </button>
+            </div>
 
+            <div className={styles.card}>
               <p className={styles.description}>
                 Scan a QR code to preview your app or enter the URL manually to connect to your
                 development server.
@@ -470,7 +487,7 @@ function App() {
                       type="text"
                       value={url}
                       onChange={(e) => handleUrlChange(e.target.value)}
-                      placeholder="http://192.168.1.x:3000"
+                      placeholder="http://192.168.1.5:3000"
                       className={urlError ? styles.inputError : ''}
                     />
                     <button
@@ -571,16 +588,6 @@ function App() {
         </>
       )}
 
-      {/* Scanner Overlay */}
-      {isScanning && (
-        <div className={styles.scannerOverlay}>
-          <div className={styles.scannerFrame}></div>
-          <div className={styles.scannerControls}>
-            <button onClick={stopScan}>Cancel Scan</button>
-          </div>
-        </div>
-      )}
-
       {/* Settings Bottom Sheet */}
       {showSettings && (
         <div className={styles.bottomSheetOverlay} onClick={closeSettings}>
@@ -593,6 +600,10 @@ function App() {
 
             <section className={styles.settingsSection}>
               <h3>Theme</h3>
+              <p className={styles.themeNote}>
+                Automatic is only supported on operating systems that allow you to control the
+                system-wide color scheme.
+              </p>
               <div className={styles.themeOptions}>
                 <button
                   onClick={() => saveTheme('automatic')}
@@ -625,10 +636,6 @@ function App() {
                   {theme === 'dark' && <span className={styles.checkmark}>●</span>}
                 </button>
               </div>
-              <p className={styles.themeNote}>
-                Automatic is only supported on operating systems that allow you to control the
-                system-wide color scheme.
-              </p>
             </section>
 
             {deviceInfo && (
@@ -645,7 +652,7 @@ function App() {
                   </div>
                   <div className={styles.infoRow}>
                     <span>OS</span>
-                    <span>
+                    <span style={{ textTransform: 'capitalize' }}>
                       {deviceInfo.platform} {deviceInfo.osVersion}
                     </span>
                   </div>
@@ -662,7 +669,9 @@ function App() {
                 </div>
                 <div className={styles.infoRow}>
                   <span>Platform</span>
-                  <span>{deviceInfo?.platform || 'Web'}</span>
+                  <span style={{ textTransform: 'capitalize' }}>
+                    {deviceInfo?.platform || 'Web'}
+                  </span>
                 </div>
               </div>
             </section>
