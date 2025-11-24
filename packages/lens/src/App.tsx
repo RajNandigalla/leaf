@@ -20,7 +20,6 @@ import {
   Info,
   AlertCircle,
   Loader2,
-  Inbox,
   Star,
   Package,
   Share2,
@@ -577,11 +576,7 @@ function App() {
                 </div>
               </div>
             ) : (
-              <div className={styles.emptyState}>
-                <Inbox size={48} className={styles.emptyIcon} />
-                <h3>No recent URLs</h3>
-                <p>Scan a QR code or enter a URL to get started</p>
-              </div>
+              <></>
             )}
           </main>
         </>
