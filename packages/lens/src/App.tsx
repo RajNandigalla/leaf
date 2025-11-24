@@ -7,16 +7,12 @@ import { Capacitor } from '@capacitor/core';
 import { CapacitorBarcodeScanner } from '@capacitor/barcode-scanner';
 import { Preferences } from '@capacitor/preferences';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { CapacitorShake } from '@capgo/capacitor-shake';
 import { Device } from '@capacitor/device';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { QRCodeSVG } from 'qrcode.react';
 import {
   Settings,
   QrCode,
-  Home,
-  RotateCw,
-  X,
   Trash2,
   Sun,
   Moon,
@@ -65,7 +61,6 @@ function App() {
   const [isScanning, setIsScanning] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [showModal, setShowModal] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [isClosingSettings, setIsClosingSettings] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
@@ -91,17 +86,6 @@ function App() {
     loadTheme();
     getDeviceInfo();
 
-    // Add Shake Listener
-    const addShakeListener = async () => {
-      try {
-        await CapacitorShake.addListener('shake', () => {
-          setShowModal(true);
-        });
-      } catch (e) {
-        console.error('Failed to add shake listener', e);
-      }
-    };
-
     // Add Deep Link Listener
     const addDeepLinkListener = async () => {
       CapacitorApp.addListener('appUrlOpen', (data) => {
@@ -120,7 +104,6 @@ function App() {
       });
     };
 
-    addShakeListener();
     addDeepLinkListener();
 
     return () => {
@@ -141,8 +124,6 @@ function App() {
         closeQR();
       } else if (showClearConfirm) {
         closeClearConfirm();
-      } else if (showModal) {
-        setShowModal(false);
       } else if (isScanning) {
         stopScan();
       } else if (!canGoBack) {
@@ -160,7 +141,7 @@ function App() {
     return () => {
       listenerPromise.then((listener) => listener.remove());
     };
-  }, [showSettings, showPlugins, showHelp, showQR, showClearConfirm, showModal, isScanning]);
+  }, [showSettings, showPlugins, showHelp, showQR, showClearConfirm, isScanning]);
 
   // Apply theme to document root
   // Apply theme to document root and status bar
@@ -350,16 +331,6 @@ function App() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleGoHome = async () => {
-    setShowModal(false);
-    await LensLoader.resetServerUrl();
-  };
-
-  const handleReload = () => {
-    setShowModal(false);
-    window.location.reload();
   };
 
   const closeSettings = () => {
@@ -606,29 +577,6 @@ function App() {
           <div className={styles.scannerFrame}></div>
           <div className={styles.scannerControls}>
             <button onClick={stopScan}>Cancel Scan</button>
-          </div>
-        </div>
-      )}
-
-      {/* Shake Modal */}
-      {showModal && (
-        <div className={styles.lensModalOverlay} onClick={() => setShowModal(false)}>
-          <div className={styles.lensModal} onClick={(e) => e.stopPropagation()}>
-            <h3>Leaf Lens Menu</h3>
-            <div className={styles.modalButtons}>
-              <button onClick={handleGoHome} className={styles.modalButton}>
-                <Home size={18} />
-                <span>Go Home</span>
-              </button>
-              <button onClick={handleReload} className={styles.modalButton}>
-                <RotateCw size={18} />
-                <span>Reload</span>
-              </button>
-              <button onClick={() => setShowModal(false)} className={styles.modalButtonCancel}>
-                <X size={18} />
-                <span>Cancel</span>
-              </button>
-            </div>
           </div>
         </div>
       )}
