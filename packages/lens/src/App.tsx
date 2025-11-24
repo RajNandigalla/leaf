@@ -493,7 +493,7 @@ function App() {
                       disabled={!url || !!urlError || isLoading}
                       className={styles.goButton}
                     >
-                      {isLoading ? <Loader2 size={16} className={styles.spinner} /> : 'Go'}
+                      {isLoading ? <Loader2 size={16} className={styles.spinner} /> : 'GO'}
                     </button>
                   </div>
                 )}
