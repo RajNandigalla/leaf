@@ -23,6 +23,9 @@
         "@capacitor/haptics": "^7.0.2",
         "@capacitor/camera": "^7.0.2",
         "@capacitor/dialog": "^7.0.2",
-        "@capacitor/device": "^7.0.2"
+        "@capacitor/device": "^7.0.2",
+        "@capgo/capacitor-navigation-bar": "^7.3.14",
+        "@capacitor/status-bar": "^7.0.3",
+        "@capacitor/share": "^7.0.2"
     }
 }

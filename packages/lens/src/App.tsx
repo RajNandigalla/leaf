@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import { Share } from '@capacitor/share';
+import LensLoader from './plugins/LensLoader';
+import styles from './App.module.scss';
 import { App as CapacitorApp } from '@capacitor/app';
 import { CapacitorBarcodeScanner } from '@capacitor/barcode-scanner';
 import { Preferences } from '@capacitor/preferences';
@@ -8,7 +11,6 @@ import { Device } from '@capacitor/device';
 import { QRCodeSVG } from 'qrcode.react';
 import {
   Settings,
-  ChevronRight,
   QrCode,
   Home,
   RotateCw,
@@ -18,16 +20,14 @@ import {
   Moon,
   Circle,
   Info,
-  Wifi,
-  WifiOff,
   AlertCircle,
   Loader2,
   Inbox,
   Star,
+  Package,
   Share2,
 } from 'lucide-react';
-import LensLoader from './plugins/LensLoader';
-import styles from './App.module.scss';
+import leafConfig from '../leaf.json';
 
 // Helper function to validate URL
 const validateUrl = (url: string): string => {
@@ -62,7 +62,7 @@ function App() {
   >([]);
   const [isScanning, setIsScanning] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isOnline, setIsOnline] = useState(true);
+
   const [showModal, setShowModal] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [isClosingSettings, setIsClosingSettings] = useState(false);
@@ -81,11 +81,12 @@ function App() {
   const [showQR, setShowQR] = useState(false);
   const [isClosingQR, setIsClosingQR] = useState(false);
   const [qrUrl, setQrUrl] = useState('');
+  const [showPlugins, setShowPlugins] = useState(false);
+  const [isClosingPlugins, setIsClosingPlugins] = useState(false);
 
   useEffect(() => {
     loadHistory();
     loadTheme();
-    checkNetworkStatus();
     getDeviceInfo();
 
     // Add Shake Listener
@@ -120,16 +121,7 @@ function App() {
     addShakeListener();
     addDeepLinkListener();
 
-    // Listen for network changes
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
       CapacitorApp.removeAllListeners();
     };
   }, []);
@@ -139,6 +131,8 @@ function App() {
     const handleBackButton = ({ canGoBack }: any) => {
       if (showSettings) {
         closeSettings();
+      } else if (showPlugins) {
+        closePlugins();
       } else if (showHelp) {
         closeHelp();
       } else if (showQR) {
@@ -164,7 +158,7 @@ function App() {
     return () => {
       listenerPromise.then((listener) => listener.remove());
     };
-  }, [showSettings, showHelp, showQR, showClearConfirm, showModal, isScanning]);
+  }, [showSettings, showPlugins, showHelp, showQR, showClearConfirm, showModal, isScanning]);
 
   // Apply theme to document root
   useEffect(() => {
@@ -214,10 +208,6 @@ function App() {
     const newHistory = history.filter((h) => h.url !== urlToDelete);
     setHistory(newHistory);
     await Preferences.set({ key: 'history', value: JSON.stringify(newHistory) });
-  };
-
-  const checkNetworkStatus = () => {
-    setIsOnline(navigator.onLine);
   };
 
   const getDeviceInfo = async () => {
@@ -373,6 +363,30 @@ function App() {
     }, 300);
   };
 
+  const closePlugins = () => {
+    setIsClosingPlugins(true);
+    setTimeout(() => {
+      setShowPlugins(false);
+      setIsClosingPlugins(false);
+    }, 300);
+  };
+
+  const handleShare = async (url: string) => {
+    console.log('LensLoader: handleShare called for', url);
+    const deepLink = `leaflens://open?url=${url}`;
+    console.log('LensLoader: Generated deep link', deepLink);
+    try {
+      const result = await Share.share({
+        title: 'Open in Leaf Lens',
+        text: `Check out this dev server: ${url}\nOpen in Leaf Lens: ${deepLink}`,
+        dialogTitle: 'Share with team',
+      });
+      console.log('LensLoader: Share result', result);
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
+  };
+
   return (
     <div className={styles.container}>
       {!isScanning && (
@@ -384,11 +398,9 @@ function App() {
               <h1>Leaf Lens</h1>
             </div>
             <div className={styles.headerActions}>
-              {isOnline ? (
-                <Wifi size={20} className={styles.networkIcon} />
-              ) : (
-                <WifiOff size={20} className={styles.networkIconOffline} />
-              )}
+              <button onClick={() => setShowPlugins(true)} className={styles.settingsButton}>
+                <Package size={24} />
+              </button>
               <button onClick={() => setShowSettings(true)} className={styles.settingsButton}>
                 <Settings size={24} />
               </button>
@@ -505,12 +517,22 @@ function App() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          showQRCode(h.url);
+                          handleShare(h.url);
                         }}
                         className={styles.shareButton}
-                        title="Generate QR Code"
+                        title="Share Deep Link"
                       >
                         <Share2 size={18} />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          showQRCode(h.url);
+                        }}
+                        className={styles.qrButton}
+                        title="Show QR Code"
+                      >
+                        <QrCode size={18} />
                       </button>
                       <button
                         onClick={(e) => {
@@ -733,6 +755,30 @@ function App() {
             </div>
             <button onClick={closeHelp} className={styles.helpCloseButton}>
               Got it
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Plugins Bottom Sheet */}
+      {showPlugins && (
+        <div className={styles.bottomSheetOverlay} onClick={closePlugins}>
+          <div
+            className={`${styles.bottomSheet} ${isClosingPlugins ? styles.closing : ''}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.sheetHandle}></div>
+            <h2>Supported Plugins</h2>
+            <div className={styles.appInfo}>
+              {Object.entries(leafConfig.plugins).map(([name, version], index) => (
+                <div key={index} className={styles.infoRow}>
+                  <span>{name}</span>
+                  <span>{version}</span>
+                </div>
+              ))}
+            </div>
+            <button onClick={closePlugins} className={styles.helpCloseButton}>
+              Close
             </button>
           </div>
         </div>
