@@ -180,12 +180,11 @@ function App() {
         try {
           if (isDark) {
             await StatusBar.setStyle({ style: Style.Dark });
-            await StatusBar.setBackgroundColor({ color: '#1e293b' });
           } else {
             await StatusBar.setStyle({ style: Style.Light });
-            await StatusBar.setBackgroundColor({ color: '#ffffff' });
           }
-          await StatusBar.setOverlaysWebView({ overlay: false });
+          await StatusBar.setBackgroundColor({ color: '#00000000' }); // Transparent
+          await StatusBar.setOverlaysWebView({ overlay: true });
         } catch (e) {
           console.error('Failed to set status bar', e);
         }
@@ -231,6 +230,7 @@ function App() {
   };
 
   const deleteHistoryItem = async (urlToDelete: string) => {
+    await Haptics.impact({ style: ImpactStyle.Medium });
     const newHistory = history.filter((h) => h.url !== urlToDelete);
     setHistory(newHistory);
     await Preferences.set({ key: 'history', value: JSON.stringify(newHistory) });
@@ -261,6 +261,7 @@ function App() {
   };
 
   const toggleFavorite = async (url: string) => {
+    await Haptics.impact({ style: ImpactStyle.Light });
     const newHistory = history.map((h) =>
       h.url === url ? { ...h, isFavorite: !h.isFavorite } : h
     );
@@ -278,6 +279,7 @@ function App() {
   };
 
   const clearAllHistory = async () => {
+    await Haptics.impact({ style: ImpactStyle.Medium });
     setHistory([]);
     await Preferences.set({ key: 'history', value: JSON.stringify([]) });
     closeClearConfirm();
@@ -298,6 +300,7 @@ function App() {
   const startScan = async () => {
     try {
       setIsScanning(true);
+      await Haptics.impact({ style: ImpactStyle.Light });
       document.body.classList.add('barcode-scanner-active');
 
       const result = await CapacitorBarcodeScanner.scanBarcode({
@@ -398,6 +401,7 @@ function App() {
   };
 
   const handleShare = async (url: string) => {
+    await Haptics.impact({ style: ImpactStyle.Light });
     console.log('LensLoader: handleShare called for', url);
     const deepLink = `leaflens://open?url=${url}`;
     console.log('LensLoader: Generated deep link', deepLink);
@@ -424,10 +428,22 @@ function App() {
               <h1>Leaf Lens</h1>
             </div>
             <div className={styles.headerActions}>
-              <button onClick={() => setShowPlugins(true)} className={styles.settingsButton}>
+              <button
+                onClick={() => {
+                  Haptics.impact({ style: ImpactStyle.Light });
+                  setShowPlugins(true);
+                }}
+                className={styles.settingsButton}
+              >
                 <Package size={24} />
               </button>
-              <button onClick={() => setShowSettings(true)} className={styles.settingsButton}>
+              <button
+                onClick={() => {
+                  Haptics.impact({ style: ImpactStyle.Light });
+                  setShowSettings(true);
+                }}
+                className={styles.settingsButton}
+              >
                 <Settings size={24} />
               </button>
             </div>
