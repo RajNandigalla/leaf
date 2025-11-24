@@ -3,11 +3,13 @@ import { Share } from '@capacitor/share';
 import LensLoader from './plugins/LensLoader';
 import styles from './App.module.scss';
 import { App as CapacitorApp } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
 import { CapacitorBarcodeScanner } from '@capacitor/barcode-scanner';
 import { Preferences } from '@capacitor/preferences';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { CapacitorShake } from '@capgo/capacitor-shake';
 import { Device } from '@capacitor/device';
+import { StatusBar, Style } from '@capacitor/status-bar';
 import { QRCodeSVG } from 'qrcode.react';
 import {
   Settings,
@@ -161,12 +163,36 @@ function App() {
   }, [showSettings, showPlugins, showHelp, showQR, showClearConfirm, showModal, isScanning]);
 
   // Apply theme to document root
+  // Apply theme to document root and status bar
   useEffect(() => {
-    if (theme === 'automatic') {
-      document.documentElement.removeAttribute('data-theme');
-    } else {
-      document.documentElement.setAttribute('data-theme', theme);
-    }
+    const applyTheme = async () => {
+      let isDark = false;
+
+      if (theme === 'automatic') {
+        document.documentElement.removeAttribute('data-theme');
+        isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      } else {
+        document.documentElement.setAttribute('data-theme', theme);
+        isDark = theme === 'dark';
+      }
+
+      if (Capacitor.isNativePlatform()) {
+        try {
+          if (isDark) {
+            await StatusBar.setStyle({ style: Style.Dark });
+            await StatusBar.setBackgroundColor({ color: '#1e293b' });
+          } else {
+            await StatusBar.setStyle({ style: Style.Light });
+            await StatusBar.setBackgroundColor({ color: '#ffffff' });
+          }
+          await StatusBar.setOverlaysWebView({ overlay: false });
+        } catch (e) {
+          console.error('Failed to set status bar', e);
+        }
+      }
+    };
+
+    applyTheme();
   }, [theme]);
 
   const loadHistory = async () => {
